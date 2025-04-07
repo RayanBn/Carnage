@@ -13,11 +13,15 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
+            <head>
+                <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet" />
+            </head>
             <body
                 className="h-screen w-screen"
             >
                 {children}
             </body>
+
         </html>
     );
 }

@@ -1,38 +1,36 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { Car } from "@/components/models/car";
-import { insertCoin } from "playroomkit";
+import { useEffect, useState } from "react";
+import { getState, insertCoin, onPlayerJoin, waitForState } from "playroomkit";
+import LobbyInterface from "@/components/interface/lobby-interface";
+import GameInterface from "@/components/interface/game-interface";
+import LobbyScene from "@/components/scenes/lobby";
 
 const Home = () => {
+    const [inGame, setInGame] = useState(getState("inGame"));
 
     useEffect(() => {
         insertCoin({
-            // skipLobby: true,
+            skipLobby: true,
         });
 
-        // waitForState("inGame", (value) => {
-        //     setInGame(value);
-        // });
+        onPlayerJoin((player) => {
+            console.log("Player joined", player);
+        });
+
+        waitForState("inGame", (value) => {
+            setInGame(value);
+        });
     }, []);
 
     return (
         <>
-            <Suspense fallback={null}>
-                <Canvas>
-                    <PerspectiveCamera makeDefault position={[2, 0, 5]} />
-
-                    <ambientLight />
-                    <pointLight position={[10, 10, 10]} />
-
-                    <OrbitControls />
-
-                    <Car scale={[ .01, .01, .01 ]} />
-
-                </Canvas>
-            </Suspense>
+            <div className="absolute inset-0">
+                <LobbyScene />
+                <div className="absolute inset-0 pointer-events-none">
+                    {inGame ? <GameInterface /> : <LobbyInterface />}
+                </div>
+            </div>
         </>
     );
 }
