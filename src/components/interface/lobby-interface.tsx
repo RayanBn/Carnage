@@ -35,15 +35,15 @@ const LobbyInterface = () => {
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 pointer-events-auto">
                 {!amHost && (
                     <button
-                        className="font-montserrat bg-carnage-red text-carnage-yellow text-6xl uppercase tracking-wide px-8 py-3 rounded-md shadow-[0_8px_0_#b2331f] leading-none"
+                        className="font-montserrat bg-carnage-red text-carnage-yellow text-2xl sm:text-4xl md:text-5xl lg:text-6xl uppercase tracking-wide px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-md shadow-[0_8px_0_#b2331f] leading-none"
                         onClick={handleToggleReady}
-                >
+                    >
                         {currentPlayer?.getState('ready') ? 'Unready' : 'Ready'}
                     </button>
                 )}
                 {amHost && (
                     <button
-                        className={`font-montserrat bg-carnage-red text-carnage-yellow text-6xl uppercase tracking-wide px-8 py-3 rounded-md shadow-[0_8px_0_#b2331f] leading-none ${
+                        className={`font-montserrat bg-carnage-red text-carnage-yellow text-2xl sm:text-4xl md:text-5xl lg:text-6xl uppercase tracking-wide px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-md shadow-[0_8px_0_#b2331f] leading-none ${
                             !areAllPlayersReady() ? 'opacity-50 cursor-not-allowed' : ''
                         }`}
                         onClick={handleStartGame}

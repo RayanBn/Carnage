@@ -63,7 +63,7 @@ const RightPanel = ({ className }: RightPanelProps) => {
             {/* Burger Menu Button - Only visible on mobile */}
             <button 
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden fixed top-4 right-4 z-50 p-2 bg-carnage-blue-dark rounded-lg pointer-events-auto"
+                className="lg:hidden fixed top-4 right-4 z-50 p-2 bg-carnage-blue-dark rounded-lg pointer-events-auto"
             >
                 <div className="w-6 h-5 relative flex flex-col justify-between">
                     <span className={`w-full h-0.5 bg-white transition-all ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
@@ -73,8 +73,8 @@ const RightPanel = ({ className }: RightPanelProps) => {
             </button>
 
             {/* Mobile Menu Overlay */}
-            <div className={`md:hidden fixed inset-0 bg-black/50 z-40 transition-opacity ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                <div className={`absolute right-0 top-0 h-full w-64 bg-carnage-blue-medium p-4 transition-transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+            <div className={`lg:hidden fixed inset-0 bg-black/50 z-40 transition-opacity ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <div className={`absolute right-0 top-0 h-full w-64 bg-carnage-blue-medium p-4 transition-transform overflow-y-auto pointer-events-auto ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
                     <div className="flex flex-col gap-4 items-center justify-center mt-16">
                         <PanelItem 
                             className="flex items-center justify-center cursor-pointer"
@@ -101,8 +101,9 @@ const RightPanel = ({ className }: RightPanelProps) => {
                                     type="text" 
                                     placeholder="NAME"
                                     defaultValue={playerName}
+                                    maxLength={10}
                                     onChange={(e) => updatePlayerName(e.target.value)}
-                                    className="w-3/4 h-full p-2 bg-carnage-blue-dark text-white font-montserrat text-3xl uppercase outline-none "
+                                    className="w-3/4 h-full px-0.5 py-0 bg-carnage-blue-dark text-white font-montserrat text-[clamp(0.6rem,1.2vw,1rem)] uppercase outline-none"
                                 />
                             </div>
                         </PanelItem>
@@ -111,7 +112,7 @@ const RightPanel = ({ className }: RightPanelProps) => {
             </div>
 
             {/* Desktop Panel - Hidden on mobile */}
-            <div className={`${className} hidden md:block`}>
+            <div className={`${className} hidden lg:block`}>
                 <div className="flex flex-col gap-4 items-center justify-center">
                     <PanelItem 
                         className="flex items-center justify-center cursor-pointer"
@@ -132,8 +133,9 @@ const RightPanel = ({ className }: RightPanelProps) => {
                                 type="text" 
                                 placeholder="NAME"
                                 defaultValue={playerName}
+                                maxLength={10}
                                 onChange={(e) => updatePlayerName(e.target.value)}
-                                className="w-3/4 h-full p-2 bg-carnage-blue-dark text-white font-montserrat text-3xl uppercase outline-none "
+                                className="w-3/4 h-full px-0.5 py-0 bg-carnage-blue-dark text-white font-montserrat text-[clamp(0.6rem,1.2vw,1rem)] uppercase outline-none"
                             />
                         </div>
                     </PanelItem>
