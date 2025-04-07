@@ -2,13 +2,14 @@ import Image from "next/image";
 import car from "../../../../assets/icons/car.png";
 import city from "../../../../assets/icons/city.png";
 import profile from "../../../../assets/icons/profile.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { getState, me, myPlayer, setState } from "playroomkit";
 
 interface PanelItemProps {
     onClick?: () => void;
@@ -34,6 +35,28 @@ const RightPanel = ({ className }: RightPanelProps) => {
     const [isCarDialogOpen, setIsCarDialogOpen] = useState(false);
     const [isCityDialogOpen, setIsCityDialogOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const player = myPlayer();
+    const [playerName, setPlayerName] = useState<string>();
+    const [map, setMap] = useState<string>(getState('map'));
+
+    useEffect(() => {
+        if (player) {
+            setPlayerName(player.getProfile().name);
+            setMap(getState('map'));
+        }
+    }, [player]);
+
+    const updatePlayerName = (name: string) => {
+        player?.setState('name', name);
+    }
+
+    const updateMap = (map: string) => {
+        setState('map', map);
+    }
+
+    const updateCar = (car: string) => {
+        player?.setState('car', car);
+    }
 
     return (
         <>
@@ -76,7 +99,9 @@ const RightPanel = ({ className }: RightPanelProps) => {
                                 <Image src={profile} alt="Profile" className="w-1/4 h-full object-cover" />
                                 <input 
                                     type="text" 
-                                    placeholder="NAME" 
+                                    placeholder="NAME"
+                                    defaultValue={playerName}
+                                    onChange={(e) => updatePlayerName(e.target.value)}
                                     className="w-3/4 h-full p-2 bg-carnage-blue-dark text-white font-montserrat text-3xl uppercase outline-none "
                                 />
                             </div>
@@ -106,6 +131,8 @@ const RightPanel = ({ className }: RightPanelProps) => {
                             <input 
                                 type="text" 
                                 placeholder="NAME"
+                                defaultValue={playerName}
+                                onChange={(e) => updatePlayerName(e.target.value)}
                                 className="w-3/4 h-full p-2 bg-carnage-blue-dark text-white font-montserrat text-3xl uppercase outline-none "
                             />
                         </div>
@@ -119,13 +146,13 @@ const RightPanel = ({ className }: RightPanelProps) => {
                         <DialogTitle className="text-3xl font-bold text-center">Select Your Car</DialogTitle>
                     </DialogHeader>
                     <div className="grid grid-cols-3 gap-6 mt-8">
-                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors">
+                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors" onClick={() => updateCar('car')}>
                             Car 1
                         </button>
-                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors">
+                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors" onClick={() => updateCar('car')}>
                             Car 2
                         </button>
-                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors">
+                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors" onClick={() => updateCar('car')}>
                             Car 3
                         </button>
                     </div>
@@ -138,14 +165,14 @@ const RightPanel = ({ className }: RightPanelProps) => {
                         <DialogTitle className="text-3xl font-bold text-center">Select Your City</DialogTitle>
                     </DialogHeader>
                     <div className="grid grid-cols-3 gap-6 mt-8">
-                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors">
-                            City 1
+                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors" onClick={() => updateMap('city')}>
+                            City
                         </button>
-                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors">
-                            City 2
+                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors" onClick={() => updateMap('city')}>
+                            City
                         </button>
-                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors">
-                            City 3
+                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors" onClick={() => updateMap('city')}>
+                            City
                         </button>
                     </div>
                 </DialogContent>

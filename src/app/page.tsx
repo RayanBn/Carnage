@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getState, insertCoin, onPlayerJoin, waitForState } from "playroomkit";
+import { getState, insertCoin, onPlayerJoin, setState, waitForState } from "playroomkit";
 import LobbyInterface from "@/components/interface/lobby-interface";
 import GameInterface from "@/components/interface/game-interface";
 import LobbyScene from "@/components/scenes/lobby";
@@ -13,6 +13,8 @@ const Home = () => {
         insertCoin({
             skipLobby: true,
         });
+
+        setState("map", "city");
 
         onPlayerJoin((player) => {
             console.log("Player joined", player);
