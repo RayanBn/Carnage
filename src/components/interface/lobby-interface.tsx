@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { usePlayersList, useIsHost, useMultiplayerState, myPlayer } from 'playroomkit';
+import { usePlayersList, useIsHost, useMultiplayerState, myPlayer, setState } from 'playroomkit';
 import RightPanel from './lobby/right-panel';
 import Logo from '../../../assets/logo.png';
 import Image from 'next/image';
@@ -19,7 +19,7 @@ const LobbyInterface = () => {
 
     const handleStartGame = () => {
         if (areAllPlayersReady()) {
-            // TODO: Implement game start logic
+            setState("inGame", true);
         }
     };
 

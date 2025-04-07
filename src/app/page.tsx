@@ -5,6 +5,7 @@ import { getState, insertCoin, onPlayerJoin, setState, waitForState } from "play
 import LobbyInterface from "@/components/interface/lobby-interface";
 import GameInterface from "@/components/interface/game-interface";
 import LobbyScene from "@/components/scenes/lobby";
+import GameScene from "@/components/scenes/game";
 
 const Home = () => {
     const [inGame, setInGame] = useState(getState("inGame"));
@@ -25,12 +26,16 @@ const Home = () => {
         });
     }, []);
 
+    useEffect(() => {
+        console.log("inGame", inGame);
+    }, [inGame]);
+
     return (
         <>
             <div className="absolute inset-0">
-                <LobbyScene />
+                {inGame === true ? <GameScene /> : <LobbyScene />}
                 <div className="absolute inset-0 pointer-events-none">
-                    {inGame ? <GameInterface /> : <LobbyInterface />}
+                    {inGame === true ? <GameInterface /> : <LobbyInterface />}
                 </div>
             </div>
         </>
