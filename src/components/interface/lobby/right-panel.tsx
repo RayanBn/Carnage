@@ -1,6 +1,5 @@
 import Image from "next/image";
 import car from "../../../../assets/icons/car.png";
-import city from "../../../../assets/icons/city.png";
 import profile from "../../../../assets/icons/profile.png";
 import { useEffect, useState } from "react";
 import {
@@ -9,7 +8,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { getState, me, myPlayer, setState } from "playroomkit";
+import { getState, me, myPlayer, setState, useIsHost } from "playroomkit";
+import { cars, Car, cities, City } from "@/lib/store";
 
 interface PanelItemProps {
     onClick?: () => void;
@@ -31,11 +31,36 @@ interface RightPanelProps {
     className: string;
 }
 
+interface DialogItemProps {
+    onClick?: () => void;
+    children?: React.ReactNode;
+    className?: string;
+    enabled?: boolean;
+}
+
+const DialogItem = ({ onClick, children, className, enabled = true }: DialogItemProps) => {
+    const ClickHandler = () => {
+        if (enabled) {
+            onClick?.();
+        }
+    }
+
+    return (
+        <div
+            onClick={ClickHandler}
+            className={`${className} bg-carnage-blue-medium rounded-lg pointer-events-auto hover:bg-carnage-blue-light transition-colors ${enabled ? 'opacity-100' : 'opacity-50'} ${enabled ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+        >
+            {children}
+        </div>
+    );
+};
+
 const RightPanel = ({ className }: RightPanelProps) => {
     const [isCarDialogOpen, setIsCarDialogOpen] = useState(false);
     const [isCityDialogOpen, setIsCityDialogOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const player = myPlayer();
+    const amHost = useIsHost();
     const [playerName, setPlayerName] = useState<string>();
     const [map, setMap] = useState<string>(getState('map'));
 
@@ -50,12 +75,13 @@ const RightPanel = ({ className }: RightPanelProps) => {
         player?.setState('name', name);
     }
 
-    const updateMap = (map: string) => {
+    const updateMap = (map: City) => {
         setState('map', map);
     }
 
-    const updateCar = (car: string) => {
+    const updateCar = (car: Car) => {
         player?.setState('car', car);
+        setIsCarDialogOpen(false);
     }
 
     return (
@@ -92,7 +118,7 @@ const RightPanel = ({ className }: RightPanelProps) => {
                                 setIsMobileMenuOpen(false);
                             }}
                         >
-                            <Image src={city} alt="Car" className="w-11/12 h-full object-cover mx-auto" />
+                            <Image src={"/icons/cities/japan.png"} alt="Car" width={100} height={100} className="w-11/12 h-full object-cover mx-auto" />
                         </PanelItem>
                         <PanelItem className="flex items-center justify-center gap-2">
                             <div className="flex items-center justify-center gap-2 w-11/12 h-full p-2">
@@ -124,7 +150,7 @@ const RightPanel = ({ className }: RightPanelProps) => {
                         className="flex items-center justify-center cursor-pointer"
                         onClick={() => setIsCityDialogOpen(true)}
                     >
-                        <Image src={city} alt="Car" className="w-11/12 h-full object-cover mx-auto" />
+                        <Image src={"/icons/cities/japan.png"} alt="Car" width={100} height={100} className="w-11/12 h-full object-cover mx-auto" />
                     </PanelItem>
                     <PanelItem className="flex items-center justify-center gap-2">
                         <div className="flex items-center justify-center gap-2 w-11/12 h-full p-2">
@@ -145,18 +171,16 @@ const RightPanel = ({ className }: RightPanelProps) => {
             <Dialog open={isCarDialogOpen} onOpenChange={setIsCarDialogOpen}>
                 <DialogContent className="bg-carnage-blue-dark border-none text-white">
                     <DialogHeader>
-                        <DialogTitle className="text-3xl font-bold text-center">Select Your Car</DialogTitle>
+                        <DialogTitle className="text-3xl font-bold text-center">Select a Car</DialogTitle>
                     </DialogHeader>
                     <div className="grid grid-cols-3 gap-6 mt-8">
-                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors" onClick={() => updateCar('car')}>
-                            Car 1
-                        </button>
-                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors" onClick={() => updateCar('car')}>
-                            Car 2
-                        </button>
-                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors" onClick={() => updateCar('car')}>
-                            Car 3
-                        </button>
+                        {
+                            cars.map((car, index) => (
+                                <DialogItem key={index} onClick={() => updateCar(car)}>
+                                    <Image src={car.image} alt="Car" width={100} height={100} className="object-cover mx-auto w-full h-full" />
+                                </DialogItem>
+                            ))
+                        }
                     </div>
                 </DialogContent>
             </Dialog>
@@ -164,18 +188,16 @@ const RightPanel = ({ className }: RightPanelProps) => {
             <Dialog open={isCityDialogOpen} onOpenChange={setIsCityDialogOpen}>
                 <DialogContent className="bg-carnage-blue-dark border-none text-white">
                     <DialogHeader>
-                        <DialogTitle className="text-3xl font-bold text-center">Select Your City</DialogTitle>
+                        <DialogTitle className="text-3xl font-bold text-center">Select City</DialogTitle>
                     </DialogHeader>
-                    <div className="grid grid-cols-3 gap-6 mt-8">
-                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors" onClick={() => updateMap('city')}>
-                            City
-                        </button>
-                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors" onClick={() => updateMap('city')}>
-                            City
-                        </button>
-                        <button className="p-4 bg-carnage-blue hover:bg-carnage-blue-light rounded-lg transition-colors" onClick={() => updateMap('city')}>
-                            City
-                        </button>
+                    <div className="grid grid-cols-2 gap-6 mt-8">
+                        {
+                            cities.map((city, index) => (
+                                <DialogItem key={index} onClick={() => updateMap(city)} enabled={amHost}>
+                                    <Image src={city.image} alt="City" width={100} height={100} className="w-full h-full object-cover mx-auto" />
+                                </DialogItem>
+                            ))
+                        }
                     </div>
                 </DialogContent>
             </Dialog>

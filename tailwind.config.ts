@@ -24,6 +24,7 @@ const config: Config = {
     			'carnage-yellow': '#ffd34a',
     			'carnage-blue-dark': '#0f2533',
     			'carnage-blue-medium': '#183343',
+    			'carnage-blue-light': '#214153',
     			background: 'hsl(var(--background))',
     			foreground: 'hsl(var(--foreground))',
     			card: {
