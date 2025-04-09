@@ -7,6 +7,7 @@ import GameInterface from "@/components/interface/game-interface";
 import LobbyScene from "@/components/scenes/lobby";
 import GameScene from "@/components/scenes/game";
 import { AssetsProvider } from "@/components/ui/assets-loader";
+import { usePlayerStatesStore } from "@/lib/store";
 
 const Home = () => {
     const [inGame, setInGame] = useState(getState("inGame"));
@@ -20,6 +21,8 @@ const Home = () => {
 
         onPlayerJoin((player) => {
             console.log("Player joined", player);
+            const players = usePlayerStatesStore.getState();
+            players.addPlayer(player);
         });
 
         waitForState("inGame", (value) => {

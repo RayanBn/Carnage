@@ -1,4 +1,5 @@
-import { createStore } from 'zustand';
+import { create } from 'zustand';
+import { Joystick, PlayerState } from 'playroomkit';
 
 export type Car = {
     id: number;
@@ -47,3 +48,42 @@ export const cities: City[] = [
         image: '/icons/cities/japan.png'
     },
 ]
+
+export type PlayerStateStore = {
+    player: PlayerState | null,
+    joystick: Joystick | null,
+    setPlayerState: (playerState: PlayerState, joystick: Joystick) => void
+};
+
+export type PlayerStatesStore = {
+    playerStates: PlayerStateStore[],
+    addPlayer: (playerState: PlayerState) => void
+}
+
+export const usePlayerStateStore = create<PlayerStateStore>((set) => ({
+    player: null,
+    joystick: null,
+    setPlayerState: (playerState: PlayerState, joystick: Joystick) => {
+        set(() => ({
+            player: playerState,
+            joystick: joystick
+        }))
+    }
+}));
+
+export const usePlayerStatesStore = create<PlayerStatesStore>((set) => ({
+    playerStates: [],
+    addPlayer: (playerState: PlayerState) => {
+        const joystick = new Joystick(playerState, {
+            type: "angular",
+            keyboard: false
+        });
+
+        const newPlayer = usePlayerStateStore.getState();
+        newPlayer.setPlayerState(playerState, joystick);
+
+        set((state) => ({
+            playerStates: [...state.playerStates, newPlayer]
+        }))
+    }
+}));
