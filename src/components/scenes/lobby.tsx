@@ -1,11 +1,20 @@
 import { Canvas } from "@react-three/fiber";
 import { Car } from "../models/car";
-import { Suspense, useEffect, useState } from "react";
-import { Center, OrbitControls, Text, Sky } from "@react-three/drei";
+import { useEffect, useState, Suspense, useCallback } from "react";
+import { Center, OrbitControls, Text, Sky, useTexture } from "@react-three/drei";
 import { getState, usePlayersList } from "playroomkit";
 import { Vector3 } from "three";
+import { useAssets } from "../ui/assets-loader";
 
 const Road = () => {
+  const { registerAssetLoad } = useAssets();
+  
+  // Simuler le chargement de texture pour la route
+  useEffect(() => {
+    // Indiquer que la ressource est chargée
+    registerAssetLoad();
+  }, [registerAssetLoad]);
+  
   return (
     <>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.276, 0]}>
@@ -71,21 +80,36 @@ const Player = ({ player, props }: PlayerProps) => {
 const LobbyScene = () => {
     const map = getState('map');
     const players = usePlayersList();
+    const { forceHideLoader } = useAssets();
 
     useEffect(() => {
         console.log(players);
     }, [players]);
+    
+    // Force la fermeture du loader lorsque la scène est montée
+    useEffect(() => {
+        // Attendre que la scène soit montée puis forcer la fermeture du loader
+        const forceHideTimer = setTimeout(() => {
+            console.log("Forcing loader to hide from LobbyScene");
+            forceHideLoader();
+        }, 2000);
+        
+        return () => clearTimeout(forceHideTimer);
+    }, [forceHideLoader]);
 
     return (
-        <Suspense fallback={null}>
-            <Canvas
-                camera={{
-                    position: [-3, .5, 1],
-                    fov: 45,
-                    near: 0.1,
-                    far: 1000,
-                }}
-            >
+        <Canvas
+            camera={{
+                position: [-3, .5, 1],
+                fov: 45,
+                near: 0.1,
+                far: 1000,
+            }}
+            onCreated={() => {
+                console.log("Canvas created");
+            }}
+        >
+            <Suspense fallback={null}>
                 <Sky distance={450000} sunPosition={[0, 1, 0]} inclination={0} azimuth={0.25} />
 
                 <ambientLight intensity={1.2} />
@@ -130,8 +154,8 @@ const LobbyScene = () => {
                     minAzimuthAngle={-Math.PI / 1.2}
                     maxAzimuthAngle={0}
                 />
-            </Canvas>
-        </Suspense>
+            </Suspense>
+        </Canvas>
     );
 };
 
