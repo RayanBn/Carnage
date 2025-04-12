@@ -22,7 +22,7 @@ const Road = () => {
             <meshStandardMaterial color="#403f3f" />
         </mesh>
 
-        
+
         <mesh rotation={[-Math.PI / 2, 0, -Math.PI / 2]} position={[0, -.275, 0]}>
             <planeGeometry args={[0.2, 200]} />
             <meshStandardMaterial color="white" />
@@ -43,14 +43,14 @@ const Player = ({ player, props }: PlayerProps) => {
 
     useEffect(() => {
         setPlayerName(player.getState('name') || player.getProfile().name);
-        
+
         const intervalId = setInterval(() => {
             const currentName = player.getState('name') || player.getProfile().name;
             if (currentName !== playerName) {
                 setPlayerName(currentName);
             }
         }, 500);
-        
+
         return () => {
             clearInterval(intervalId);
         };
@@ -114,7 +114,7 @@ const LobbyScene = () => {
 
                 <ambientLight intensity={1.2} />
                 <pointLight position={[10, 10, 10]} intensity={1.5} />
-                
+
                 <fog attach="fog" color="#e9eff2" near={.5} far={20} />
 
                 <Road />
@@ -124,14 +124,14 @@ const LobbyScene = () => {
                         const totalPlayers = players.length;
                         const spacing = 0.8;
                         const maxCarsPerRow = 4;
-                        
+
                         const row = Math.floor(idx / maxCarsPerRow);
                         const positionInRow = idx % maxCarsPerRow;
-                        
+
                         const carsInCurrentRow = Math.min(maxCarsPerRow, totalPlayers - (row * maxCarsPerRow));
                         const totalWidth = (carsInCurrentRow - 1) * spacing;
                         const startZ = -totalWidth / 2;
-                        
+
                         const position = new Vector3(
                             row * 2,
                             0.5,

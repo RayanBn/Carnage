@@ -11,6 +11,7 @@ import { usePlayerStatesStore } from "@/lib/store";
 
 const Home = () => {
     const [inGame, setInGame] = useState(getState("inGame"));
+    const { addPlayer } = usePlayerStatesStore();
 
     useEffect(() => {
         insertCoin({
@@ -21,8 +22,7 @@ const Home = () => {
 
         onPlayerJoin((player) => {
             console.log("Player joined", player);
-            const players = usePlayerStatesStore.getState();
-            players.addPlayer(player);
+            addPlayer(player);
         });
 
         waitForState("inGame", (value) => {
