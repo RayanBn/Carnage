@@ -8,8 +8,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { getState, me, myPlayer, setState, useIsHost } from "playroomkit";
-import { cars, Car, cities, City } from "@/lib/store";
+import { getState, myPlayer, setState, useIsHost } from "playroomkit";
+import { cars, Car, cities, City } from "@/lib/data";
 
 interface PanelItemProps {
     onClick?: () => void;
@@ -87,7 +87,7 @@ const RightPanel = ({ className }: RightPanelProps) => {
     return (
         <>
             {/* Burger Menu Button - Only visible on mobile */}
-            <button 
+            <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="lg:hidden fixed top-4 right-4 z-50 p-2 bg-carnage-blue-dark rounded-lg pointer-events-auto"
             >
@@ -102,7 +102,7 @@ const RightPanel = ({ className }: RightPanelProps) => {
             <div className={`lg:hidden fixed inset-0 bg-black/50 z-40 transition-opacity ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                 <div className={`absolute right-0 top-0 h-full w-64 bg-carnage-blue-medium p-4 transition-transform overflow-y-auto pointer-events-auto ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
                     <div className="flex flex-col gap-4 items-center justify-center mt-16">
-                        <PanelItem 
+                        <PanelItem
                             className="flex items-center justify-center cursor-pointer"
                             onClick={() => {
                                 setIsCarDialogOpen(true);
@@ -111,7 +111,7 @@ const RightPanel = ({ className }: RightPanelProps) => {
                         >
                             <Image src={car} alt="Car" className="w-11/12 h-full object-cover mx-auto" />
                         </PanelItem>
-                        <PanelItem 
+                        <PanelItem
                             className="flex items-center justify-center cursor-pointer"
                             onClick={() => {
                                 setIsCityDialogOpen(true);
@@ -123,8 +123,8 @@ const RightPanel = ({ className }: RightPanelProps) => {
                         <PanelItem className="flex items-center justify-center gap-2">
                             <div className="flex items-center justify-center gap-2 w-11/12 h-full p-2">
                                 <Image src={profile} alt="Profile" className="w-1/4 h-full object-cover" />
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     placeholder="NAME"
                                     defaultValue={playerName}
                                     maxLength={10}
@@ -140,13 +140,13 @@ const RightPanel = ({ className }: RightPanelProps) => {
             {/* Desktop Panel - Hidden on mobile */}
             <div className={`${className} hidden lg:block`}>
                 <div className="flex flex-col gap-4 items-center justify-center">
-                    <PanelItem 
+                    <PanelItem
                         className="flex items-center justify-center cursor-pointer"
                         onClick={() => setIsCarDialogOpen(true)}
                     >
                         <Image src={car} alt="Car" className="w-11/12 h-full object-cover mx-auto" />
                     </PanelItem>
-                    <PanelItem 
+                    <PanelItem
                         className="flex items-center justify-center cursor-pointer"
                         onClick={() => setIsCityDialogOpen(true)}
                     >
@@ -155,8 +155,8 @@ const RightPanel = ({ className }: RightPanelProps) => {
                     <PanelItem className="flex items-center justify-center gap-2">
                         <div className="flex items-center justify-center gap-2 w-11/12 h-full p-2">
                             <Image src={profile} alt="Profile" className="w-1/4 h-full object-cover" />
-                            <input 
-                                type="text" 
+                            <input
+                                type="text"
                                 placeholder="NAME"
                                 defaultValue={playerName}
                                 maxLength={10}

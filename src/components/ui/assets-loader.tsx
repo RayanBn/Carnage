@@ -24,8 +24,8 @@ interface AssetsProviderProps {
   maxLoadingTime?: number; // Maximum time to show loader (ms)
 }
 
-export const AssetsProvider = ({ 
-  children, 
+export const AssetsProvider = ({
+  children,
   minimumLoadingTime = 800,
   maxLoadingTime = 5000
 }: AssetsProviderProps) => {
@@ -60,7 +60,7 @@ export const AssetsProvider = ({
         console.log("Loading stuck at 100% for too long, forcing completion");
         setLoadingStuck(true);
       }, 1000); // Réduit à 1s au lieu de 3s
-      
+
       return () => clearTimeout(stuckTimer);
     }
   }, [progress]);
@@ -74,14 +74,12 @@ export const AssetsProvider = ({
         setIsInitialLoading(false);
       }
     }, maxLoadingTime);
-    
+
     return () => clearTimeout(maxTimer);
   }, [assetsLoaded, maxLoadingTime]);
 
   // Determine when assets are fully loaded
   useEffect(() => {
-    console.log("Progress:", progress, "Active:", active, "Loaded:", loaded, "Total:", total, "Manual:", manuallyLoadedAssets, "Stuck:", loadingStuck);
-    
     // Assets are loaded when:
     // 1. R3F loader is done (progress is 100% or active is false)
     // 2. Any manually registered assets are loaded
@@ -101,9 +99,9 @@ export const AssetsProvider = ({
 
   return (
     <AssetsContext.Provider value={{ assetsLoaded, registerAssetLoad, isInitialLoading, forceHideLoader }}>
-      <Loader 
-        isLoading={!assetsLoaded} 
-        progress={progress} 
+      <Loader
+        isLoading={!assetsLoaded}
+        progress={progress}
         stuck={progress === 100 && !assetsLoaded}
         onManualClose={forceHideLoader}
       />

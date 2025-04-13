@@ -1,89 +1,57 @@
 import { create } from 'zustand';
 import { Joystick, PlayerState } from 'playroomkit';
 
-export type Car = {
-    id: number;
-    name: string;
-    image: string;
-}
-
-export type City = {
-    id: number;
-    name: string;
-    image: string;
-}
-
-export const cars: Car[] = [
-    {
-        id: 1,
-        name: 'Car',
-        image: '/icons/cars/car.png'
-    },
-    {
-        id: 2,
-        name: 'Car',
-        image: '/icons/cars/car.png'
-    },
-    {
-        id: 3,
-        name: 'Car',
-        image: '/icons/cars/car.png'
-    },
-    {
-        id: 4,
-        name: 'Car',
-        image: '/icons/cars/car.png'
-    },
-    {
-        id: 5,
-        name: 'Car',
-        image: '/icons/cars/car.png'
-    },
-]
-
-export const cities: City[] = [
-    {
-        id: 1,
-        name: 'Japan',
-        image: '/icons/cities/japan.png'
-    },
-]
-
 export type PlayerStateStore = {
-    player: PlayerState | null,
-    joystick: Joystick | null,
-    setPlayerState: (playerState: PlayerState, joystick: Joystick) => void
+    state: PlayerState | null,
+    controls: Joystick | null,
+    setPlayerState: (state: PlayerState, controls: Joystick) => void
+};
+
+export type Player = {
+    state: PlayerState;
+    controls: Joystick;
 };
 
 export type PlayerStatesStore = {
-    playerStates: PlayerStateStore[],
-    addPlayer: (playerState: PlayerState) => void
+    players: Player[],
+    addPlayer: (playerState: PlayerState) => void,
+    removePlayer: (playerId: string) => void
 }
 
 export const usePlayerStateStore = create<PlayerStateStore>((set) => ({
-    player: null,
-    joystick: null,
-    setPlayerState: (playerState: PlayerState, joystick: Joystick) => {
+    state: null,
+    controls: null,
+    setPlayerState: (state: PlayerState, controls: Joystick) => {
         set(() => ({
-            player: playerState,
-            joystick: joystick
+            state: state,
+            controls: controls
         }))
     }
 }));
 
 export const usePlayerStatesStore = create<PlayerStatesStore>((set) => ({
-    playerStates: [],
+    players: [],
     addPlayer: (playerState: PlayerState) => {
         const joystick = new Joystick(playerState, {
             type: "angular",
             keyboard: false
         });
 
-        const newPlayer = usePlayerStateStore.getState();
-        newPlayer.setPlayerState(playerState, joystick);
+        const newPlayer = { state: playerState, controls: joystick };
 
         set((state) => ({
-            playerStates: [...state.playerStates, newPlayer]
-        }))
+            players: [...state.players, newPlayer]
+        }));
+
+        playerState.onQuit(() => {
+            set((state) => ({
+                players: state.players.filter((player) => player.state.id !== playerState.id)
+            }));
+        });
+    },
+    removePlayer: (playerId: string) => {
+        set((state) => ({
+            players: state.players.filter((player) => player.state.id !== playerId)
+        }));
     }
 }));
