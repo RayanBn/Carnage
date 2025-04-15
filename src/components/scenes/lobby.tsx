@@ -1,7 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import { Car } from "../models/car";
 import { useEffect, useState, Suspense, useCallback } from "react";
-import { Center, OrbitControls, Text, Sky, useTexture } from "@react-three/drei";
+import { Center, OrbitControls, Text, Sky, useTexture, PresentationControls } from "@react-three/drei";
 import { getState, usePlayersList } from "playroomkit";
 import { Vector3 } from "three";
 import { useAssets } from "../ui/assets-loader";
@@ -95,43 +95,42 @@ const LobbyScene = () => {
 
             <fog attach="fog" color="#e9eff2" near={.5} far={20} />
 
-            <Road />
 
-            {
-                players.map((player, idx) => {
-                    const totalPlayers = players.length;
-                    const spacing = 0.8;
-                    const maxCarsPerRow = 4;
+            <PresentationControls
+                global
+                rotation={ [ 0.13, 0.1, 0 ] }
+                polar={ [ - 0.4, 0.2 ] }
+                azimuth={ [ - 1, 0.75 ] }
+                config={ { mass: 2, tension: 400 } }
+                snap
+            >
+                <Road />
 
-                    const row = Math.floor(idx / maxCarsPerRow);
-                    const positionInRow = idx % maxCarsPerRow;
+                {
+                    players.map((player, idx) => {
+                        const totalPlayers = players.length;
+                        const spacing = 0.8;
+                        const maxCarsPerRow = 4;
 
-                    const carsInCurrentRow = Math.min(maxCarsPerRow, totalPlayers - (row * maxCarsPerRow));
-                    const totalWidth = (carsInCurrentRow - 1) * spacing;
-                    const startZ = -totalWidth / 2;
+                        const row = Math.floor(idx / maxCarsPerRow);
+                        const positionInRow = idx % maxCarsPerRow;
 
-                    const position = new Vector3(
-                        row * 2,
-                        0.5,
-                        0.33 + (startZ + (positionInRow * spacing))
-                    );
+                        const carsInCurrentRow = Math.min(maxCarsPerRow, totalPlayers - (row * maxCarsPerRow));
+                        const totalWidth = (carsInCurrentRow - 1) * spacing;
+                        const startZ = -totalWidth / 2;
 
-                    return (
-                        <Player key={idx} player={player} props={{ position }} />
-                    )
-                })
-            }
+                        const position = new Vector3(
+                            row * 2,
+                            0.5,
+                            0.33 + (startZ + (positionInRow * spacing))
+                        );
 
-            <OrbitControls
-                enableZoom={false}
-                enablePan={false}
-                minPolarAngle={Math.PI / 2.5}
-                maxPolarAngle={Math.PI / 2.5}
-                enableRotate={true}
-                rotateSpeed={0.5}
-                minAzimuthAngle={-Math.PI / 1.2}
-                maxAzimuthAngle={0}
-            />
+                        return (
+                            <Player key={idx} player={player} props={{ position }} />
+                        )
+                    })
+                }
+            </PresentationControls>
         </Canvas>
     );
 };
