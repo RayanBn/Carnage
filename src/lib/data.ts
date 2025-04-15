@@ -7,7 +7,6 @@ export type Car = {
     maxSpeed: number;
     acceleration: number;
     deceleration: number;
-    turnSpeed: number;
     mass: number;
 }
 
@@ -26,7 +25,6 @@ export const cars: Car[] = [
         maxSpeed: 100,
         acceleration: 10,
         deceleration: 10,
-        turnSpeed: 10,
         mass: 10
     },
     {
@@ -37,7 +35,6 @@ export const cars: Car[] = [
         maxSpeed: 100,
         acceleration: 10,
         deceleration: 10,
-        turnSpeed: 10,
         mass: 10
     },
     {
@@ -48,7 +45,6 @@ export const cars: Car[] = [
         maxSpeed: 100,
         acceleration: 10,
         deceleration: 10,
-        turnSpeed: 10,
         mass: 10
     },
     {
@@ -59,7 +55,6 @@ export const cars: Car[] = [
         maxSpeed: 100,
         acceleration: 10,
         deceleration: 10,
-        turnSpeed: 10,
         mass: 10
     },
     {
@@ -70,7 +65,6 @@ export const cars: Car[] = [
         maxSpeed: 100,
         acceleration: 10,
         deceleration: 10,
-        turnSpeed: 10,
         mass: 10
     },
 ]

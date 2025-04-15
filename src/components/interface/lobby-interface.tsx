@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { usePlayersList, useIsHost, useMultiplayerState, myPlayer, setState } from 'playroomkit';
-import RightPanel from './lobby/right-panel';
+import { RightPanel } from './lobby/rightPanel/right-panel';
 import Logo from '../../../assets/logo.png';
 import Image from 'next/image';
 
@@ -34,7 +34,7 @@ const LobbyInterface = () => {
                         font-size: 1.25rem !important;
                     }
                 }
-                
+
                 /* Z Flip en format horizontal et autres appareils similaires */
                 @media (max-width: 720px) and (max-height: 380px) {
                     .game-button {
@@ -43,7 +43,7 @@ const LobbyInterface = () => {
                         max-height: 2.5rem !important;
                     }
                 }
-                
+
                 /* Format moyen, pour éviter des boutons trop grands */
                 @media (min-width: 400px) and (max-width: 767px) {
                     .game-button {
@@ -79,18 +79,6 @@ const LobbyInterface = () => {
                     </button>
                 )}
             </div>
-
-            {/* <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 pointer-events-auto">
-                {cars.map((car) => (
-                    <button
-                        key={car}
-                        className="w-16 h-16 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all"
-                        onClick={() => currentPlayer?.setState('car', car)}
-                    >
-                    </button>
-                ))}
-            </div> */}
-
         </div>
     );
 };
