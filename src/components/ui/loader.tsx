@@ -12,7 +12,6 @@ const Loader = ({ isLoading, progress = 0, stuck = false, onManualClose }: Loade
   
   useEffect(() => {
     if (isLoading) {
-      console.log("Loader isLoading:", isLoading, "Progress:", progress, "Stuck:", stuck);
     }
   }, [isLoading, progress, stuck]);
   
@@ -20,7 +19,6 @@ const Loader = ({ isLoading, progress = 0, stuck = false, onManualClose }: Loade
   useEffect(() => {
     if (isLoading && progress >= 90) {
       const buttonTimer = setTimeout(() => {
-        console.log("Showing continue button after delay");
         setShowContinueButton(true);
       }, 1500);
       

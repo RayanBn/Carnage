@@ -38,7 +38,6 @@ export const AssetsProvider = ({
 
   // Force de fermer le loader si nécessaire
   const forceHideLoader = () => {
-    console.log("Force hide loader called");
     setAssetsLoaded(true);
     setIsInitialLoading(false);
   };
@@ -57,7 +56,6 @@ export const AssetsProvider = ({
     // Si le loader est à 100% pendant 1 seconde, on considère que le chargement est terminé
     if (progress === 100) {
       const stuckTimer = setTimeout(() => {
-        console.log("Loading stuck at 100% for too long, forcing completion");
         setLoadingStuck(true);
       }, 1000); // Réduit à 1s au lieu de 3s
 
@@ -69,7 +67,6 @@ export const AssetsProvider = ({
   useEffect(() => {
     const maxTimer = setTimeout(() => {
       if (!assetsLoaded) {
-        console.log("Maximum loading time reached, forcing loader to close");
         setAssetsLoaded(true);
         setIsInitialLoading(false);
       }
@@ -86,14 +83,12 @@ export const AssetsProvider = ({
     // 3. Minimum loading time has passed
     // 4. Or if loading is stuck at 100%
     if (((!active || progress === 100) && canHideLoader) || loadingStuck) {
-      console.log("Hiding loader");
       setAssetsLoaded(true);
       setIsInitialLoading(false);
     }
   }, [active, progress, manuallyLoadedAssets, canHideLoader, loadingStuck]);
 
   const registerAssetLoad = () => {
-    console.log("Asset loaded manually");
     setManuallyLoadedAssets(prev => prev + 1);
   };
 

@@ -7,9 +7,10 @@ Title: Japanese Touge Racer - Low poly model
 */
 
 import * as THREE from 'three'
-import React, { useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
+import { useAssets } from '../ui/assets-loader'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -106,6 +107,12 @@ type GLTFResult = GLTF & {
 
 export function Car(props: JSX.IntrinsicElements['group']) {
   const { nodes, materials } = useGLTF('/models/ae86.glb') as GLTFResult
+  const { registerAssetLoad } = useAssets();
+
+  useEffect(() => {
+    registerAssetLoad();
+  }, [registerAssetLoad]);
+  
   return (
     <group {...props} dispose={null}>
       <group name="Sketchfab_Scene">
