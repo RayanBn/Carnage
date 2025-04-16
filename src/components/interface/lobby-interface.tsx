@@ -66,7 +66,7 @@ const LobbyInterface = () => {
                 <Image src={Logo} alt="Logo" className="w-full h-full object-contain" />
             </div>
 
-            <RightPanel className="font-montserrat text-4xl uppercase tracking-wide absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center bg-carnage-blue-medium rounded-lg p-4" />
+            {/* <RightPanel className="font-montserrat text-4xl uppercase tracking-wide absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center bg-carnage-blue-medium rounded-lg p-4" /> */}
 
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 pointer-events-auto">
                 {!amHost && (
