@@ -1,19 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getState, insertCoin, onPlayerJoin, PlayerState, setState, waitForState } from "playroomkit";
+import {
+    getRoomCode,
+    getState,
+    insertCoin,
+    setState,
+    waitForState,
+} from "playroomkit";
 import LobbyInterface from "@/components/interface/lobby-interface";
 import GameInterface from "@/components/interface/game-interface";
 import LobbyScene from "@/components/scenes/lobby";
 import GameScene from "@/components/scenes/game";
 import { AssetsProvider } from "@/components/ui/assets-loader";
+import { syncRoomWithServer } from "@/lib/room-manager";
 
 const Home = () => {
     const [inGame, setInGame] = useState(getState("inGame"));
+    const [roomCode, setRoomCode] = useState<string>(getRoomCode() || "");
 
     useEffect(() => {
         insertCoin({
             skipLobby: true,
+        }).then(() => {
+            const code = getRoomCode();
+            setRoomCode(code || "");
+            console.log("roomCode ->", code);
         });
 
         setState("map", "city");
@@ -22,6 +34,12 @@ const Home = () => {
             setInGame(value);
         });
     }, []);
+
+    useEffect(() => {
+        const cleanup = syncRoomWithServer();
+
+        return cleanup;
+    }, [roomCode]);
 
     return (
         <AssetsProvider minimumLoadingTime={800} maxLoadingTime={4000}>
@@ -33,6 +51,6 @@ const Home = () => {
             </div>
         </AssetsProvider>
     );
-}
+};
 
 export default Home;
