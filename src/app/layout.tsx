@@ -12,16 +12,15 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" className="h-full">
             <head>
                 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet" />
             </head>
             <body
-                className="h-screen w-screen"
+                className="h-full overflow-x-hidden"
             >
                 {children}
             </body>
-
         </html>
     );
 }
