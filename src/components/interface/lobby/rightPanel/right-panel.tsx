@@ -1,5 +1,5 @@
-// components/RightPanel/RightPanel.tsx
 "use client";
+
 import { useEffect, useState } from "react";
 import { getState, myPlayer, setState, useIsHost } from "playroomkit";
 import { City } from "@/lib/data";

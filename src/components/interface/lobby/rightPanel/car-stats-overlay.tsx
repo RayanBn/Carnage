@@ -1,4 +1,3 @@
-// components/RightPanel/CarStatsOverlay.tsx
 import { Car } from "@/lib/data";
 import useMobile from "@/lib/hooks/useMobile";
 

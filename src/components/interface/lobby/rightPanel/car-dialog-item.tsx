@@ -1,4 +1,3 @@
-// components/RightPanel/CarDialogItem.tsx
 import Image from "next/image";
 import { Car } from "@/lib/data";
 import { CarStatsOverlay } from "./car-stats-overlay";

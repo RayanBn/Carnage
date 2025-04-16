@@ -82,11 +82,11 @@ export const AssetsProvider = ({
     // 2. Any manually registered assets are loaded
     // 3. Minimum loading time has passed
     // 4. Or if loading is stuck at 100%
-    if (((!active || progress === 100) && canHideLoader) || loadingStuck) {
+    if (!assetsLoaded && (((!active || progress === 100) && canHideLoader) || loadingStuck)) {
       setAssetsLoaded(true);
       setIsInitialLoading(false);
     }
-  }, [active, progress, manuallyLoadedAssets, canHideLoader, loadingStuck]);
+  }, [active, progress, manuallyLoadedAssets, canHideLoader, loadingStuck, assetsLoaded]);
 
   const registerAssetLoad = () => {
     setManuallyLoadedAssets(prev => prev + 1);

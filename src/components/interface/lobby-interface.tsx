@@ -40,7 +40,17 @@ const LobbyInterface = () => {
                     .game-button {
                         font-size: 1rem !important;
                         padding: 0.25rem 0.5rem !important;
-                        max-height: 2.5rem !important;
+                        max-height: 40px !important;
+                        min-height: 35px !important;
+                    }
+                }
+
+                /* Écrans larges avec hauteur restreinte */
+                @media (max-width: 820px) and (max-height: 550px) {
+                    .game-button {
+                        max-height: 35px !important;
+                        font-size: 1rem !important;
+                        padding: 2px 10px !important;
                     }
                 }
 
