@@ -14,7 +14,7 @@ export type Player = {
 
 export type PlayerStatesStore = {
     players: Player[],
-    addPlayer: (playerState: PlayerState) => void,
+    addPlayer: (playerState: PlayerState, isMobile: boolean) => void,
     removePlayer: (playerId: string) => void
 }
 
@@ -31,10 +31,10 @@ export const usePlayerStateStore = create<PlayerStateStore>((set) => ({
 
 export const usePlayerStatesStore = create<PlayerStatesStore>((set) => ({
     players: [],
-    addPlayer: (playerState: PlayerState) => {
+    addPlayer: (playerState: PlayerState, isMobile: boolean) => {
         const joystick = new Joystick(playerState, {
             type: "angular",
-            keyboard: false
+            keyboard: !isMobile
         });
 
         const newPlayer = { state: playerState, controls: joystick };

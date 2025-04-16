@@ -6,10 +6,12 @@ import { useAssets } from "../ui/assets-loader";
 import { usePlayerStatesStore } from "@/lib/store";
 import { CarController } from "../car-controller";
 import { onPlayerJoin } from "playroomkit";
+import useMobile from "@/lib/hooks/useMobile";
 
 const GameScene = () => {
-    const {players, addPlayer} = usePlayerStatesStore();
+    const { players, addPlayer } = usePlayerStatesStore();
     const { registerAssetLoad } = useAssets();
+    const { isMobile } = useMobile();
 
     useEffect(() => {
         registerAssetLoad();
@@ -17,7 +19,7 @@ const GameScene = () => {
 
     useEffect(() => {
         onPlayerJoin((state) => {
-            addPlayer(state);
+            addPlayer(state, isMobile);
         });
     }, []);
 
