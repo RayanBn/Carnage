@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { useProgress } from "@react-three/drei";
 import Loader from "./loader";
 
@@ -37,10 +37,10 @@ export const AssetsProvider = ({
   const [loadingStuck, setLoadingStuck] = useState(false);
 
   // Force de fermer le loader si nécessaire
-  const forceHideLoader = () => {
+  const forceHideLoader = useCallback(() => {
     setAssetsLoaded(true);
     setIsInitialLoading(false);
-  };
+  }, []);
 
   // Ensure minimum loading time for UX reasons
   useEffect(() => {
@@ -88,9 +88,9 @@ export const AssetsProvider = ({
     }
   }, [active, progress, manuallyLoadedAssets, canHideLoader, loadingStuck, assetsLoaded]);
 
-  const registerAssetLoad = () => {
+  const registerAssetLoad = useCallback(() => {
     setManuallyLoadedAssets(prev => prev + 1);
-  };
+  }, []);
 
   return (
     <AssetsContext.Provider value={{ assetsLoaded, registerAssetLoad, isInitialLoading, forceHideLoader }}>
