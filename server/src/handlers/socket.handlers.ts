@@ -11,9 +11,12 @@ const validateMovePayload = (payload: MovePayload): boolean => {
     return (
         typeof payload.id === 'string' &&
         Array.isArray(payload.position) &&
-        Array.isArray(payload.rotation) &&
+        typeof payload.rotation === 'object' &&
         payload.position.length === 3 &&
-        payload.rotation.length === 3
+        typeof payload.rotation.x === 'number' &&
+        typeof payload.rotation.y === 'number' &&
+        typeof payload.rotation.z === 'number' &&
+        typeof payload.rotation.w === 'number'
     )
 }
 
@@ -31,7 +34,7 @@ export const setupSocketHandlers = (io: Server, clients: Clients) => {
 
         clients[client.id] = {
             position: [10, 0, 0],
-            rotation: [0, 0, 0],
+            rotation: { x: 0, y: 0, z: 0, w: 1 },
             username: '',
             roomId: null
         }

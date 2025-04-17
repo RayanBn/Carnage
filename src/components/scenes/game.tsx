@@ -45,6 +45,7 @@ const GameScene = () => {
                             controls={player.controls}
                             idx={index}
                             position={player.position}
+                            rotation={player.rotation}
                         />
                     );
                 })}

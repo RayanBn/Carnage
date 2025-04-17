@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { Joystick, PlayerState } from "playroomkit";
-import { Vector3 } from "three";
+import { Quaternion, Vector3 } from "three";
 
 export type PlayerStateStore = {
     state: PlayerState | null;
@@ -13,7 +13,7 @@ export type Player = {
     state: PlayerState;
     controls: Joystick;
     position: Vector3;
-    rotation: Vector3;
+    rotation: Quaternion;
 };
 
 export type PlayerStatesStore = {
@@ -24,7 +24,7 @@ export type PlayerStatesStore = {
         isMobile: boolean,
         id: string
     ) => void;
-    updatePlayerPosition: (id: string, position: Vector3, rotation: Vector3) => void;
+    updatePlayerPosition: (id: string, position: Vector3, rotation: Quaternion) => void;
     getPlayers: () => Player[];
 };
 
@@ -57,7 +57,7 @@ export const usePlayerStatesStore = create<PlayerStatesStore>((set, get) => ({
             state: playerState,
             controls: joystick,
             position: new Vector3(0, 0, 0),
-            rotation: new Vector3(0, 0, 0)
+            rotation: new Quaternion(0, 0, 0, 1)
         };
 
         set((state) => ({
@@ -72,7 +72,7 @@ export const usePlayerStatesStore = create<PlayerStatesStore>((set, get) => ({
             }));
         });
     },
-    updatePlayerPosition: (id: string, position: Vector3, rotation: Vector3) => {
+    updatePlayerPosition: (id: string, position: Vector3, rotation: Quaternion) => {
         set((state) => ({
             players: state.players.map((player) =>
                 player.id === id ? { ...player, position, rotation } : player

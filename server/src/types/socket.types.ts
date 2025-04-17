@@ -1,6 +1,11 @@
 export interface ClientData {
     position: [number, number, number]
-    rotation: [number, number, number]
+    rotation: {
+        x: number
+        y: number
+        z: number
+        w: number
+    }
     username: string
     roomId: string | null
     playroomId?: string
@@ -18,7 +23,12 @@ export interface JoinPayload {
 
 export interface MovePayload {
     id: string
-    rotation: [number, number, number]
+    rotation: {
+        x: number
+        y: number
+        z: number
+        w: number
+    }
     position: [number, number, number]
     username: string
 }
