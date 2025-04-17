@@ -5,23 +5,30 @@ import { useEffect } from "react";
 import { useAssets } from "../ui/assets-loader";
 import { usePlayerStatesStore } from "@/lib/store";
 import { CarController } from "../car-controller";
-import { onPlayerJoin } from "playroomkit";
-import useMobile from "@/lib/hooks/useMobile";
+import { useSocket } from "@/lib/hooks/useSocket";
+import { getRoomCode, useIsHost } from "playroomkit";
 
 const GameScene = () => {
-    const { players, addPlayer } = usePlayerStatesStore();
+    const { getPlayers } = usePlayerStatesStore();
     const { registerAssetLoad } = useAssets();
-    const { isMobile } = useMobile();
+    const { socket } = useSocket();
+    const isHost = useIsHost();
+    const roomCode = getRoomCode();
 
     useEffect(() => {
         registerAssetLoad();
     }, [registerAssetLoad]);
 
     useEffect(() => {
-        onPlayerJoin((state) => {
-            addPlayer(state, isMobile);
-        });
-    }, []);
+        if (!socket) return;
+        if (isHost) {
+            const payload = {
+                roomId: roomCode,
+            }
+
+            socket.emit("game-started", payload);
+        }
+    }, [socket, isHost, roomCode]);
 
     return (
         <Canvas>
@@ -29,9 +36,18 @@ const GameScene = () => {
             <directionalLight />
 
             <Physics debug>
-                {players.map(({state, controls}, index) => (
-                    <CarController key={state?.id} state={state} controls={controls} idx={index}/>
-                ))}
+                {getPlayers().map((player, index) => {
+                    return (
+                        <CarController
+                            id={player.id}
+                            key={player.state?.id}
+                            state={player.state}
+                            controls={player.controls}
+                            idx={index}
+                            position={player.position}
+                        />
+                    );
+                })}
 
                 <RigidBody type="fixed">
                     <mesh scale={[100, 100, 100]} rotation={[-Math.PI / 2, 0, 0]} position={[0, -10, 0]}>

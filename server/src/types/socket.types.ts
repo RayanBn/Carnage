@@ -3,6 +3,7 @@ export interface ClientData {
     rotation: [number, number, number]
     username: string
     roomId: string | null
+    playroomId?: string
 }
 
 export interface Clients {
@@ -11,7 +12,7 @@ export interface Clients {
 
 export interface JoinPayload {
     roomId: string
-    userId: string
+    playroomId: string
     username: string
 }
 
@@ -20,4 +21,8 @@ export interface MovePayload {
     rotation: [number, number, number]
     position: [number, number, number]
     username: string
+}
+
+export interface GameStartedPayload {
+    roomId: string
 }

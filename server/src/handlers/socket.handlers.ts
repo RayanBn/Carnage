@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io'
 import { RateLimiter as Limiter } from 'limiter'
-import { Clients, JoinPayload, MovePayload } from '../types/socket.types'
+import { Clients, GameStartedPayload, JoinPayload, MovePayload } from '../types/socket.types'
 
 const moveRateLimiter = new Limiter({
     tokensPerInterval: 30,
@@ -20,7 +20,7 @@ const validateMovePayload = (payload: MovePayload): boolean => {
 const validateJoinPayload = (payload: JoinPayload): boolean => {
     return (
         typeof payload.roomId === 'string' &&
-        typeof payload.userId === 'string' &&
+        typeof payload.playroomId === 'string' &&
         typeof payload.username === 'string'
     )
 }
@@ -30,12 +30,40 @@ export const setupSocketHandlers = (io: Server, clients: Clients) => {
         console.log(`Client connected: ${client.id}`)
 
         clients[client.id] = {
-            position: [0, 0, 0],
+            position: [10, 0, 0],
             rotation: [0, 0, 0],
             username: '',
             roomId: null
         }
         console.log('Current clients:', Object.keys(clients))
+
+        client.on("game-started", (payload: GameStartedPayload) => {
+            try {
+                const { roomId } = payload
+                const roomClientIds = io.sockets.adapter.rooms.get(roomId)
+                console.log('Clients in room:', roomClientIds)
+
+                const roomState = Object.entries(clients)
+                    .filter(([id]) => clients[id].roomId === roomId)
+                    .reduce((acc, [id, data]) => ({
+                        ...acc,
+                        [id]: {
+                            id,
+                            position: data.position,
+                            rotation: data.rotation,
+                            username: data.username,
+                            playroomId: data.playroomId
+                        }
+                    }), {})
+
+                io.to(roomId).emit('gameStarted', {
+                    clients: roomState
+                })
+            } catch (error) {
+                console.error('Game started error:', error)
+                client.emit('error', { message: 'Failed to start game' })
+            }
+        })
 
         client.on("join", (payload: JoinPayload) => {
             console.log('Received join event:', payload)
@@ -44,7 +72,7 @@ export const setupSocketHandlers = (io: Server, clients: Clients) => {
                     throw new Error('Invalid join payload')
                 }
 
-                const { roomId, userId, username } = payload
+                const { roomId, playroomId, username } = payload
 
                 if (clients[client.id].roomId) {
                     client.leave(clients[client.id].roomId)
@@ -53,12 +81,14 @@ export const setupSocketHandlers = (io: Server, clients: Clients) => {
                 client.join(roomId)
                 clients[client.id].roomId = roomId
                 clients[client.id].username = username
+                clients[client.id].playroomId = playroomId
 
                 const roomClients = io.sockets.adapter.rooms.get(roomId)
                 console.log('Clients in room:', roomClients)
 
                 client.to(roomId).emit('userJoined', {
                     id: client.id,
+                    playroomId: clients[client.id].playroomId,
                     username,
                     position: clients[client.id].position,
                     rotation: clients[client.id].rotation
