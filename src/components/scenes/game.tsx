@@ -9,7 +9,7 @@ import { useSocket } from "@/lib/hooks/useSocket";
 import { getRoomCode, useIsHost } from "playroomkit";
 
 const GameScene = () => {
-    const { getPlayers } = usePlayerStatesStore();
+    const { players } = usePlayerStatesStore();
     const { registerAssetLoad } = useAssets();
     const { socket } = useSocket();
     const isHost = useIsHost();
@@ -35,8 +35,8 @@ const GameScene = () => {
             <ambientLight/>
             <directionalLight />
 
-            <Physics debug>
-                {getPlayers().map((player, index) => {
+            <Physics>
+                {players.map((player, index) => {
                     return (
                         <CarController
                             id={player.id}

@@ -3,7 +3,7 @@ import { RateLimiter as Limiter } from 'limiter'
 import { Clients, GameStartedPayload, JoinPayload, MovePayload } from '../types/socket.types'
 
 const moveRateLimiter = new Limiter({
-    tokensPerInterval: 30,
+    tokensPerInterval: 300,
     interval: 'second'
 })
 
