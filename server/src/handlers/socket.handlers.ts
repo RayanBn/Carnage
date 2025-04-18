@@ -43,30 +43,35 @@ export const setupSocketHandlers = (io: Server, clients: Clients) => {
         client.on("game-started", (payload: GameStartedPayload) => {
             try {
                 const { roomId } = payload
-                const roomClientIds = io.sockets.adapter.rooms.get(roomId)
-                console.log('Clients in room:', roomClientIds)
-
-                const roomState = Object.entries(clients)
-                    .filter(([id]) => clients[id].roomId === roomId)
-                    .reduce((acc, [id, data]) => ({
-                        ...acc,
-                        [id]: {
-                            id,
-                            position: data.position,
-                            rotation: data.rotation,
-                            username: data.username,
-                            playroomId: data.playroomId
-                        }
-                    }), {})
-
+                const clientsInRoom = Array.from(io.sockets.adapter.rooms.get(roomId) || [])
+                    .map(socketId => io.sockets.sockets.get(socketId))
+                    .filter(Boolean);
+                console.log('Clients in room:', clientsInRoom.map(c => c.id));
+                const roomState = clientsInRoom.reduce((acc, clientSocket) => {
+                    const id = clientSocket.id;
+                    const clientData = clients[id];
+                    if (clientData) {
+                        return {
+                            ...acc,
+                            [id]: {
+                                id,
+                                position: clientData.position,
+                                rotation: clientData.rotation,
+                                username: clientData.username,
+                                playroomId: clientData.playroomId
+                            }
+                        };
+                    }
+                    return acc;
+                }, {});
                 io.to(roomId).emit('gameStarted', {
                     clients: roomState
-                })
+                });
             } catch (error) {
-                console.error('Game started error:', error)
-                client.emit('error', { message: 'Failed to start game' })
+                console.error('Game started error:', error);
+                client.emit('error', { message: 'Failed to start game' });
             }
-        })
+        });
 
         client.on("join", (payload: JoinPayload) => {
             console.log('Received join event:', payload)

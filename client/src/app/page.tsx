@@ -50,20 +50,33 @@ const Home = () => {
             console.log("gameStarted", clients);
 
             const currentPlayers = [...usePlayerStatesStore.getState().players];
-            currentPlayers.forEach(player => {
-                usePlayerStatesStore.setState(state => ({
-                    players: state.players.filter(p => p.state.id !== player.state.id)
-                }));
+            const currentPlayerIds = currentPlayers.map((p) => p.state.id);
+            currentPlayers.forEach((player) => {
+                const playerId = player.state.id;
+                if (
+                    !Object.values(clients).some(
+                        (client: any) => client.playroomId === playerId
+                    )
+                ) {
+                    usePlayerStatesStore.setState((state) => ({
+                        players: state.players.filter(
+                            (p) => p.state.id !== playerId
+                        ),
+                    }));
+                }
             });
             Object.values(clients).forEach((client: any) => {
                 const { playroomId, id } = client;
                 const player = players.find((p) => p.id === playroomId);
                 const isMobile = window.innerWidth < 768;
-
-                if (player) {
+                const isPlayerAlreadyAdded =
+                    currentPlayerIds.includes(playroomId);
+                if (player && !isPlayerAlreadyAdded) {
+                    console.log("Adding player", player);
                     addPlayer(player, isMobile, id);
-                } else {
+                } else if (!player) {
                     onPlayerJoin((newPlayer) => {
+                        console.log("newPlayer", newPlayer);
                         if (newPlayer.id === playroomId) {
                             addPlayer(newPlayer, isMobile, id);
                         }
