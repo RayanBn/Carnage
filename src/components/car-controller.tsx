@@ -9,11 +9,23 @@ import {
 import { PlayerState, Joystick, myPlayer } from "playroomkit";
 import { Car } from "./models/car";
 import { Center, Html, PerspectiveCamera } from "@react-three/drei";
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Euler, Quaternion, Vector3 } from "three";
+import { Quaternion, Vector3 } from "three";
 import { useSocket } from "@/lib/hooks/useSocket";
 import { usePlayerStatesStore } from "@/lib/store";
+
+const EMIT_THROTTLE = 5; // ms
+const POSITION_THRESHOLD = 0.000001;
+const ROTATION_THRESHOLD = 0.0001;
+const LERP_FACTOR = 0.1;
+const ROTATION_MULTIPLIER = 3;
+const IMPULSE_MULTIPLIER = 1000;
+const DISTANCE_THRESHOLD = 0.1;
+const FORCE_MULTIPLIER = 100;
+const ANGLE_THRESHOLD = 0.01;
+const TORQUE_MULTIPLIER = 50;
+const HALF_PI = Math.PI / 2;
 
 interface CarControllerProps {
     id: string;
@@ -46,152 +58,213 @@ export const CarController = ({
     const lastEmitTime = useRef<number>(0);
     const { updatePlayerPosition } = usePlayerStatesStore();
 
+    const tempVector = useRef(new Vector3());
+    const identityQuaternion = useRef(new Quaternion());
+
     useEffect(() => {
-        if (socket) {
-            socket.on("move", (data: any) => {
-                const newPosition = new Vector3(
-                    data.position[0],
-                    data.position[1],
-                    data.position[2]
-                );
-                const newRotation = new Quaternion(
-                    data.rotation.x,
-                    data.rotation.y,
-                    data.rotation.z,
-                    data.rotation.w
-                );
+        if (!position) return;
 
-                if (data.id !== me?.id) {
-                    targetPosition.current.copy(newPosition);
-                    targetRotation.current.copy(newRotation);
-                }
+        targetPosition.current.copy(position);
+        if (rb.current) rb.current.setTranslation(position, true);
+    }, [position]);
 
-                updatePlayerPosition(data.id, newPosition, newRotation);
-            });
-        }
+    useEffect(() => {
+        if (!rotation) return;
+
+        targetRotation.current.copy(rotation);
+        if (rb.current) rb.current.setRotation(rotation, true);
+    }, [rotation]);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const myId = me?.id;
+
+        const handleMove = (data: any) => {
+            if (data.id === myId) return;
+
+            tempVector.current.set(
+                data.position[0],
+                data.position[1],
+                data.position[2]
+            );
+
+            const newRotation = new Quaternion(
+                data.rotation.x,
+                data.rotation.y,
+                data.rotation.z,
+                data.rotation.w
+            );
+
+            targetPosition.current.copy(tempVector.current);
+            targetRotation.current.copy(newRotation);
+            updatePlayerPosition(
+                data.id,
+                tempVector.current.clone(),
+                newRotation
+            );
+        };
+
+        socket.on("move", handleMove);
 
         return () => {
-            if (socket) {
-                socket.off("move");
-            }
+            socket.off("move", handleMove);
         };
     }, [socket, updatePlayerPosition, me?.id]);
 
-    const emitPositionUpdate = useMemo(() => {
-        return (currentPosition: Vector3, currentRotation: Quaternion) => {
+    const emitPositionUpdate = useCallback(
+        (currentPosition: Vector3, currentRotation: Quaternion) => {
             const now = performance.now();
-            if (now - lastEmitTime.current < 20) return;
+            if (now - lastEmitTime.current < EMIT_THROTTLE) return;
 
-            if (
-                socket &&
-                (currentPosition.distanceTo(prevTranslation.current) > 0.001 ||
-                    Math.abs(currentRotation.angleTo(prevRotation.current)) >
-                        0.01)
-            ) {
-                socket.emit("move", {
-                    id: id,
-                    position: [
-                        currentPosition.x,
-                        currentPosition.y,
-                        currentPosition.z,
-                    ],
-                    rotation: {
-                        x: currentRotation.x,
-                        y: currentRotation.y,
-                        z: currentRotation.z,
-                        w: currentRotation.w,
-                    },
-                    username: me.getProfile().name || "Unknown",
-                });
+            if (!socket) return;
 
-                prevTranslation.current.copy(currentPosition);
-                prevRotation.current.copy(currentRotation);
-                lastEmitTime.current = now;
-            }
-        };
-    }, [socket, id, me]);
+            const positionChanged =
+                currentPosition.distanceTo(prevTranslation.current) >
+                POSITION_THRESHOLD;
+            const rotationChanged =
+                Math.abs(currentRotation.angleTo(prevRotation.current)) >
+                ROTATION_THRESHOLD;
+
+            if (!(positionChanged || rotationChanged)) return;
+
+            const playerName = me?.getProfile().name || "Unknown";
+
+            socket.emit("move", {
+                id,
+                position: [
+                    currentPosition.x,
+                    currentPosition.y,
+                    currentPosition.z,
+                ],
+                rotation: {
+                    x: currentRotation.x,
+                    y: currentRotation.y,
+                    z: currentRotation.z,
+                    w: currentRotation.w,
+                },
+                username: playerName,
+            });
+
+            prevTranslation.current.copy(currentPosition);
+            prevRotation.current.copy(currentRotation);
+            lastEmitTime.current = now;
+        },
+        [socket, id, me]
+    );
 
     useFrame(({ camera }, dt) => {
-        if (!rb.current) return;
+        const rigidBody = rb.current;
+        if (!rigidBody) return;
 
         if (isLocalPlayer) {
-            const targetLookAt = vec3(rb.current.translation());
-            lookAt.current.lerp(targetLookAt, 0.1);
+            const targetLookAt = vec3(rigidBody.translation());
+            lookAt.current.lerp(targetLookAt, LERP_FACTOR);
             camera.lookAt(lookAt.current);
-
-            const rotVel = rb.current.angvel();
 
             if (controls?.isJoystickPressed()) {
                 const angle = controls.angle();
-                const dir = angle > Math.PI / 2 ? 1 : -1;
-                rotVel.y = -dir * Math.sin(angle) * 3;
-                const impulse = vec3({
-                    x: 0,
-                    y: 0,
-                    z: 1000 * dt * -dir,
-                });
-                const eulerRot = euler().setFromQuaternion(
-                    quat(rb.current.rotation())
+                const velocity = vec3(rigidBody.linvel());
+                const speed = velocity.length();
+
+                const MIN_ROT = 0.2;
+                const MAX_ROT = 4.0;
+                const MAX_SPEED = 50;
+
+                const rotationFactor = Math.min(
+                    MIN_ROT + (speed / MAX_SPEED) * (MAX_ROT - MIN_ROT),
+                    MAX_ROT
                 );
-                impulse.applyEuler(eulerRot);
-                rb.current.setAngvel(rotVel, true);
-                rb.current.applyImpulse(impulse, true);
+
+                const rotVel = vec3(rigidBody.angvel());
+
+                if (speed > 0.1) {
+                    rotVel.y = -Math.sin(angle) * rotationFactor;
+                    rigidBody.setAngvel(rotVel, true);
+                }
+                const dir = angle > HALF_PI ? 1 : -1;
+
+                if (Math.abs(Math.cos(angle)) > 0.5) {
+                    const impulse = vec3({
+                        x: IMPULSE_MULTIPLIER * dt * -dir,
+                        y: 0,
+                        z: 0,
+                    });
+
+                    const eulerRot = euler().setFromQuaternion(
+                        quat(rigidBody.rotation())
+                    );
+
+                    impulse.applyEuler(eulerRot);
+                    rigidBody.applyImpulse(impulse, true);
+                }
             }
 
-            const currentPosition = vec3(rb.current.translation());
-            const currentRotation = quat(rb.current.rotation());
+            const currentPosition = vec3(rigidBody.translation());
+            const currentRotation = quat(rigidBody.rotation());
             emitPositionUpdate(currentPosition, currentRotation);
         } else {
-            if (position && rotation) {
-                const currentPos = new Vector3().copy(rb.current.translation());
-                currentPos.lerp(targetPosition.current, dt * 10);
+            const currentPos = vec3(rigidBody.translation());
+            tempVector.current.copy(targetPosition.current).sub(currentPos);
+            const distanceToTarget = tempVector.current.length();
 
-                const currentRot = new Quaternion().copy(rb.current.rotation());
-                currentRot.slerp(targetRotation.current, dt * 5);
+            if (distanceToTarget > DISTANCE_THRESHOLD) {
+                tempVector.current
+                    .normalize()
+                    .multiplyScalar(FORCE_MULTIPLIER * dt);
+                rigidBody.applyImpulse(tempVector.current, true);
+            }
 
-                rb.current.setNextKinematicTranslation(currentPos);
-                rb.current.setNextKinematicRotation(currentRot);
+            const currentRot = quat(rigidBody.rotation());
+
+            const deltaRot = new Quaternion()
+                .copy(targetRotation.current)
+                .multiply(currentRot.invert());
+
+            const axis = new Vector3(
+                deltaRot.x,
+                deltaRot.y,
+                deltaRot.z
+            ).normalize();
+
+            const angle = deltaRot.angleTo(identityQuaternion.current);
+
+            if (angle > ANGLE_THRESHOLD) {
+                tempVector.current
+                    .copy(axis)
+                    .multiplyScalar(angle * TORQUE_MULTIPLIER * dt);
+                rigidBody.applyTorqueImpulse(tempVector.current, true);
             }
         }
     });
 
-    useEffect(() => {
-        if (position) targetPosition.current.copy(position);
-    }, [position]);
-
-    useEffect(() => {
-        if (rotation) targetRotation.current.copy(rotation);
-    }, [rotation]);
-
     return (
         <>
-            {position && (
-                <group position={[0, 0, idx]}>
-                    <RigidBody
-                        ref={rb}
-                        colliders={false}
-                        position={position}
-                        type={isLocalPlayer ? "dynamic" : "kinematicPosition"}
-                    >
-                        <group rotation={[0, -Math.PI / 2, 0]}>
-                            <CuboidCollider args={[4, 1, 1.4]} />
-                            <Center>
-                                <Car scale={[0.05, 0.05, 0.05]} />
-                            </Center>
-                        </group>
-                        {isLocalPlayer && (
-                            <PerspectiveCamera
-                                makeDefault
-                                position={[30, 60, 30]}
-                                near={1}
-                            />
-                        )}
-                        <Html>
-                            <p>{state?.getProfile().name}</p>
-                        </Html>
-                    </RigidBody>
-                </group>
-            )}
+            <group position={[0, 0, idx]} rotation={[0, -HALF_PI, 0]}>
+                <RigidBody
+                    ref={rb}
+                    colliders={false}
+                    type="dynamic"
+                    mass={1000}
+                    position={position || undefined}
+                    quaternion={rotation || undefined}
+                >
+                    <CuboidCollider args={[4, 1, 1.4]} />
+                    <Center>
+                        <Car scale={[0.05, 0.05, 0.05]} />
+                    </Center>
+                    {isLocalPlayer && (
+                        <PerspectiveCamera
+                            makeDefault
+                            position={[30, 60, 30]}
+                            near={1}
+                        />
+                    )}
+                    <Html>
+                        <p>{state?.getProfile().name}</p>
+                    </Html>
+                </RigidBody>
+            </group>
         </>
     );
 };

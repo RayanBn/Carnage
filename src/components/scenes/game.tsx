@@ -35,7 +35,7 @@ const GameScene = () => {
             <ambientLight/>
             <directionalLight />
 
-            <Physics>
+            <Physics debug={true}>
                 {players.map((player, index) => {
                     return (
                         <CarController
