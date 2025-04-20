@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Vector3, Quaternion } from "three";
-import { RapierRigidBody, useRapier } from "@react-three/rapier";
-import { useFrame, useThree } from "@react-three/fiber";
-import { vec3, quat, euler } from "@react-three/rapier";
+import { RapierContext, RapierRigidBody, useRapier } from "@react-three/rapier";
+import { useFrame } from "@react-three/fiber";
+import { vec3, quat } from "@react-three/rapier";
 import { Joystick } from "playroomkit";
 import * as THREE from "three"
 
@@ -26,6 +26,52 @@ type RayData = {
     hit: boolean
 };
 
+const computeSuspensionForce = (rb: RapierRigidBody, context: RapierContext) => {
+    const position = rb.translation();
+    const rotation = rb.rotation();
+    const carRot = new THREE.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
+    const carPos = new THREE.Vector3(position.x, position.y, position.z);
+    const rays: RayData[] = [];
+    const suspensionPoints = [
+        new THREE.Vector3(-2, -0.6, -1), // front-left
+        new THREE.Vector3(2, -0.6, -1),  // front-right
+        new THREE.Vector3(-2, -0.6, 1),  // rear-left
+        new THREE.Vector3(2, -0.6, 1)   // rear-right
+    ];
+
+    const suspensionLength = 1;
+    const springStrength = 10; // spring strength
+    const damping = 2;    // damping strength
+
+    suspensionPoints.forEach(point => {
+        const worldStart = point.clone().applyQuaternion(carRot).add(carPos);
+        const downVector = new THREE.Vector3(0, -1, 0);
+        const ray = new context.rapier.Ray(worldStart, downVector);
+        const hit = context.world.castRay(ray, suspensionLength, true);
+
+        var worldEnd = worldStart.clone().addScaledVector(downVector, suspensionLength);
+
+        if (hit) {
+            worldEnd = vec3(ray.pointAt(hit.timeOfImpact));
+
+            const compression = suspensionLength - hit.timeOfImpact;
+            const linVel = rb.linvel();
+            const suspensionForce = (springStrength * compression) - (damping * linVel.y);
+
+            const force = new THREE.Vector3(0, suspensionForce, 0);
+            rb.applyImpulseAtPoint(force, worldStart, true);
+        }
+        rays.push({
+            origin: worldStart,
+            end: worldEnd,
+            hit: hit ? true : false
+        });
+    });
+    return {
+        rays: rays
+    }
+};
+
 export function useVehiclePhysics(
     rigidBodyRef: React.RefObject<RapierRigidBody>,
     isLocalPlayer: boolean,
@@ -37,66 +83,17 @@ export function useVehiclePhysics(
 ) {
     const tempVector = useRef(new Vector3());
     const identityQuaternion = useRef(new Quaternion());
-    const { world, rapier } = useRapier();
-
-    const suspensionPoints = [
-        new THREE.Vector3(-2, -0.6, -1), // front-left
-        new THREE.Vector3(2, -0.6, -1),  // front-right
-        new THREE.Vector3(-2, -0.6, 1),  // rear-left
-        new THREE.Vector3(2, -0.6, 1)   // rear-right
-    ];
-
-    const suspensionLength = 1;
-    const stiffness = 10; // spring strength
-    const damping = 2;     // damping strength
+    const rapierContext = useRapier();
 
     useFrame((_, dt) => {
         const rigidBody = rigidBodyRef.current;
         if (!rigidBody) return;
 
         if (isLocalPlayer) {
-            const position = rigidBody.translation();
-            const rotation = rigidBody.rotation();
+            const { rays } = computeSuspensionForce(rigidBody, rapierContext);
 
-            const carRot = new THREE.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
-            const carPos = new THREE.Vector3(position.x, position.y, position.z);
+            setRays(rays);
 
-            const raysThisFrame: RayData[] = [];
-
-            suspensionPoints.forEach(point => {
-                const worldStart = point.clone().applyQuaternion(carRot).add(carPos);
-                const downVector = new THREE.Vector3(0, -1, 0);
-                const ray = new rapier.Ray(worldStart, { x: 0, y: -1, z: 0 });
-                const hit = world.castRay(ray, suspensionLength, true);
-
-                var worldEnd = worldStart.clone().addScaledVector(downVector, suspensionLength);
-
-                if (hit && hit.timeOfImpact < suspensionLength) {
-                    worldEnd = vec3(ray.pointAt(hit.timeOfImpact));
-
-                    const compression = suspensionLength - hit.timeOfImpact;
-
-                    const linVel = rigidBody.linvel();
-
-                    const spring = stiffness * compression;
-                    const damp = damping * linVel.y;
-                    const forceY = spring - damp;
-
-                    const force = new THREE.Vector3(0, forceY, 0);
-                    rigidBody.applyImpulseAtPoint(
-                        { x: force.x, y: force.y, z: force.z },
-                        { x: worldStart.x, y: worldStart.y, z: worldStart.z },
-                        true
-                    );
-                }
-                raysThisFrame.push({
-                    origin: worldStart,
-                    end: worldEnd,
-                    hit: hit ? true : false
-                });
-            });
-
-            setRays(raysThisFrame);
             const currentPosition = vec3(rigidBody.translation());
             const currentRotation = quat(rigidBody.rotation());
             emitPositionUpdate(currentPosition, currentRotation);
