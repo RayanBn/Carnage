@@ -19,8 +19,8 @@ export type City = {
 export const cars: Car[] = [
     {
         id: 1,
-        name: 'Car',
-        image: '/icons/cars/car.png',
+        name: 'Ai',
+        image: '/icons/cars/Ai.png',
         speed: 10,
         maxSpeed: 100,
         acceleration: 10,
@@ -29,8 +29,8 @@ export const cars: Car[] = [
     },
     {
         id: 2,
-        name: 'Car',
-        image: '/icons/cars/car.png',
+        name: 'Daika',
+        image: '/icons/cars/Daika.png',
         speed: 10,
         maxSpeed: 100,
         acceleration: 10,
@@ -39,8 +39,8 @@ export const cars: Car[] = [
     },
     {
         id: 3,
-        name: 'Car',
-        image: '/icons/cars/car.png',
+        name: 'Daishi',
+        image: '/icons/cars/Daishi.png',
         speed: 10,
         maxSpeed: 100,
         acceleration: 10,
@@ -49,8 +49,8 @@ export const cars: Car[] = [
     },
     {
         id: 4,
-        name: 'Car',
-        image: '/icons/cars/car.png',
+        name: 'Himari',
+        image: '/icons/cars/Himari.png',
         speed: 10,
         maxSpeed: 100,
         acceleration: 10,
@@ -59,8 +59,28 @@ export const cars: Car[] = [
     },
     {
         id: 5,
-        name: 'Car',
-        image: '/icons/cars/car.png',
+        name: 'Ouki',
+        image: '/icons/cars/Ouki.png',
+        speed: 10,
+        maxSpeed: 100,
+        acceleration: 10,
+        deceleration: 10,
+        mass: 10
+    },
+    {
+        id: 6,
+        name: 'Renzo',
+        image: '/icons/cars/Renzo.png',
+        speed: 10,
+        maxSpeed: 100,
+        acceleration: 10,
+        deceleration: 10,
+        mass: 10
+    },
+    {
+        id: 7,
+        name: 'Sadako',
+        image: '/icons/cars/Sadako.png',
         speed: 10,
         maxSpeed: 100,
         acceleration: 10,

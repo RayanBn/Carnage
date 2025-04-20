@@ -1,89 +1,17 @@
 import { Canvas } from "@react-three/fiber";
-import { Car } from "../models/car";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
-    Center,
-    Text,
     Sky,
     PresentationControls,
     Bounds,
     useBounds,
+    Environment,
 } from "@react-three/drei";
-import { getState, usePlayersList } from "playroomkit";
+import { getState, usePlayersList, usePlayersState } from "playroomkit";
 import { Vector3 } from "three";
 import { useAssets } from "../ui/assets-loader";
-
-const Road = () => {
-    const { registerAssetLoad } = useAssets();
-
-    useEffect(() => {
-        registerAssetLoad();
-    }, [registerAssetLoad]);
-
-    return (
-        <>
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.276, 0]}>
-                <planeGeometry args={[200, 200]} />
-                <meshStandardMaterial color="#403f3f" />
-            </mesh>
-
-            <mesh
-                rotation={[-Math.PI / 2, 0, -Math.PI / 2]}
-                position={[0, -0.275, 0]}
-            >
-                <planeGeometry args={[0.2, 200]} />
-                <meshStandardMaterial color="white" />
-            </mesh>
-        </>
-    );
-};
-
-interface PlayerProps {
-    player: any;
-    props: any;
-}
-
-const Player = ({ player, props }: PlayerProps) => {
-    const { position } = props;
-    const car = player.getState("car");
-    const [playerName, setPlayerName] = useState(
-        player.getState("name") || player.getProfile().name
-    );
-
-    useEffect(() => {
-        setPlayerName(player.getState("name") || player.getProfile().name);
-
-        const intervalId = setInterval(() => {
-            const currentName =
-                player.getState("name") || player.getProfile().name;
-            if (currentName !== playerName) {
-                setPlayerName(currentName);
-            }
-        }, 500);
-
-        return () => {
-            clearInterval(intervalId);
-        };
-    }, [player, playerName]);
-
-    return (
-        <>
-            <Center position={position}>
-                <Text
-                    fontSize={0.1}
-                    color="white"
-                    anchorX="center"
-                    anchorY="middle"
-                    position={[0, position.y + 0.1, 0.34]}
-                    rotation={[0, -Math.PI / 2, 0]}
-                >
-                    {playerName}
-                </Text>
-                <Car scale={[0.01, 0.01, 0.01]} />
-            </Center>
-        </>
-    );
-};
+import { Model as Map } from "../models/map";
+import Player from "../player";
 
 const AutoFocus = () => {
     const bounds = useBounds();
@@ -114,14 +42,16 @@ const AutoFocus = () => {
 const LobbyScene = () => {
     const map = getState("map");
     const players = usePlayersList();
+    const playerCars = usePlayersState("car");
 
     return (
         <Canvas
+            shadows
             camera={{
                 position: [-30, 5, 10],
                 fov: 45,
                 near: 0.1,
-                far: 1000,
+                far: 100000,
             }}
         >
             <Sky
@@ -130,9 +60,9 @@ const LobbyScene = () => {
                 inclination={0}
                 azimuth={0.25}
             />
-            <ambientLight intensity={1.2} />
-            <pointLight position={[10, 10, 10]} intensity={1.5} />
-            <fog attach="fog" color="#e9eff2" near={0.5} far={40} />
+            <Environment preset="sunset" />
+            <fog attach="fog" color="#e9eff2" near={1} far={200} />
+
             <PresentationControls
                 global
                 rotation={[0.13, 0.1, 0]}
@@ -141,7 +71,12 @@ const LobbyScene = () => {
                 config={{ mass: 2, tension: 400 }}
                 snap
             >
-                <Road />
+                <Map
+                    scale={[0.23, 0.23, 0.23]}
+                    position={[30, -19.27, -5]}
+                    rotation={[0, -Math.PI / 2, 0]}
+                />
+
                 <Bounds
                     fit
                     clip
@@ -169,7 +104,7 @@ const LobbyScene = () => {
 
                         const position = new Vector3(
                             row * 2,
-                            0.5,
+                            1,
                             0.33 + (startZ + positionInRow * spacing)
                         );
 
@@ -178,6 +113,7 @@ const LobbyScene = () => {
                                 key={idx}
                                 player={player}
                                 props={{ position }}
+                                car={playerCars[idx].state}
                             />
                         );
                     })}
