@@ -1,9 +1,10 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Vector3, Quaternion } from "three";
-import { RapierRigidBody } from "@react-three/rapier";
-import { useFrame } from "@react-three/fiber";
+import { RapierRigidBody, useRapier } from "@react-three/rapier";
+import { useFrame, useThree } from "@react-three/fiber";
 import { vec3, quat, euler } from "@react-three/rapier";
 import { Joystick } from "playroomkit";
+import * as THREE from "three"
 
 const PHYSICS = {
     EMIT_THROTTLE: 5,
@@ -19,60 +20,83 @@ const PHYSICS = {
     HALF_PI: Math.PI / 2,
 };
 
+type RayData = {
+    origin: THREE.Vector3,
+    end: THREE.Vector3,
+    hit: boolean
+};
+
 export function useVehiclePhysics(
     rigidBodyRef: React.RefObject<RapierRigidBody>,
     isLocalPlayer: boolean,
     controls: Joystick | null,
     targetPosition: React.MutableRefObject<Vector3>,
     targetRotation: React.MutableRefObject<Quaternion>,
-    emitPositionUpdate: (pos: Vector3, rot: Quaternion) => void
+    emitPositionUpdate: (pos: Vector3, rot: Quaternion) => void,
+    setRays: (rays: RayData[]) => void,
 ) {
     const tempVector = useRef(new Vector3());
     const identityQuaternion = useRef(new Quaternion());
+    const { world, rapier } = useRapier();
+
+    const suspensionPoints = [
+        new THREE.Vector3(-2, -0.6, -1), // front-left
+        new THREE.Vector3(2, -0.6, -1),  // front-right
+        new THREE.Vector3(-2, -0.6, 1),  // rear-left
+        new THREE.Vector3(2, -0.6, 1)   // rear-right
+    ];
+
+    const suspensionLength = 1;
+    const stiffness = 10; // spring strength
+    const damping = 2;     // damping strength
 
     useFrame((_, dt) => {
         const rigidBody = rigidBodyRef.current;
         if (!rigidBody) return;
 
         if (isLocalPlayer) {
-            if (controls?.isJoystickPressed()) {
-                const angle = controls.angle();
-                const velocity = vec3(rigidBody.linvel());
-                const speed = velocity.length();
+            const position = rigidBody.translation();
+            const rotation = rigidBody.rotation();
 
-                const MIN_ROT = 0.2;
-                const MAX_ROT = 4.0;
-                const MAX_SPEED = 100;
+            const carRot = new THREE.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
+            const carPos = new THREE.Vector3(position.x, position.y, position.z);
 
-                const rotationFactor = Math.min(
-                    MIN_ROT + (speed / MAX_SPEED) * (MAX_ROT - MIN_ROT),
-                    MAX_ROT
-                );
+            const raysThisFrame: RayData[] = [];
 
-                const rotVel = vec3(rigidBody.angvel());
+            suspensionPoints.forEach(point => {
+                const worldStart = point.clone().applyQuaternion(carRot).add(carPos);
+                const downVector = new THREE.Vector3(0, -1, 0);
+                const ray = new rapier.Ray(worldStart, { x: 0, y: -1, z: 0 });
+                const hit = world.castRay(ray, suspensionLength, true);
 
-                if (speed > 0.1) {
-                    rotVel.y = -Math.sin(angle) * rotationFactor;
-                    rigidBody.setAngvel(rotVel, true);
-                }
-                const dir = angle > PHYSICS.HALF_PI ? 1 : -1;
+                var worldEnd = worldStart.clone().addScaledVector(downVector, suspensionLength);
 
-                if (Math.abs(Math.cos(angle)) > 0.5) {
-                    const impulse = vec3({
-                        x: PHYSICS.IMPULSE_MULTIPLIER * dt * -dir,
-                        y: 0,
-                        z: 0,
-                    });
+                if (hit && hit.timeOfImpact < suspensionLength) {
+                    worldEnd = vec3(ray.pointAt(hit.timeOfImpact));
 
-                    const eulerRot = euler().setFromQuaternion(
-                        quat(rigidBody.rotation())
+                    const compression = suspensionLength - hit.timeOfImpact;
+
+                    const linVel = rigidBody.linvel();
+
+                    const spring = stiffness * compression;
+                    const damp = damping * linVel.y;
+                    const forceY = spring - damp;
+
+                    const force = new THREE.Vector3(0, forceY, 0);
+                    rigidBody.applyImpulseAtPoint(
+                        { x: force.x, y: force.y, z: force.z },
+                        { x: worldStart.x, y: worldStart.y, z: worldStart.z },
+                        true
                     );
-
-                    impulse.applyEuler(eulerRot);
-                    rigidBody.applyImpulse(impulse, true);
                 }
-            }
+                raysThisFrame.push({
+                    origin: worldStart,
+                    end: worldEnd,
+                    hit: hit ? true : false
+                });
+            });
 
+            setRays(raysThisFrame);
             const currentPosition = vec3(rigidBody.translation());
             const currentRotation = quat(rigidBody.rotation());
             emitPositionUpdate(currentPosition, currentRotation);
