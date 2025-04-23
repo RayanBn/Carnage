@@ -6,6 +6,7 @@ import {
     Bounds,
     useBounds,
     Environment,
+    OrbitControls,
 } from "@react-three/drei";
 import { getState, usePlayersList, usePlayersState } from "playroomkit";
 import { Vector3 } from "three";
@@ -43,6 +44,7 @@ const LobbyScene = () => {
     const map = getState("map");
     const players = usePlayersList();
     const playerCars = usePlayersState("car");
+    const playersStatus = usePlayersState("ready");
 
     return (
         <Canvas
@@ -62,6 +64,12 @@ const LobbyScene = () => {
             />
             <Environment preset="sunset" />
             <fog attach="fog" color="#e9eff2" near={1} far={200} />
+            <pointLight
+                position={[0, 10, 0]}
+                intensity={100}
+                castShadow
+                shadow-radius={0.5}
+            />
 
             <PresentationControls
                 global
@@ -104,7 +112,7 @@ const LobbyScene = () => {
 
                         const position = new Vector3(
                             row * 2,
-                            1,
+                            .03,
                             0.33 + (startZ + positionInRow * spacing)
                         );
 
@@ -113,6 +121,7 @@ const LobbyScene = () => {
                                 key={idx}
                                 player={player}
                                 props={{ position }}
+                                isReady={playersStatus[idx].state}
                                 car={playerCars[idx].state}
                             />
                         );

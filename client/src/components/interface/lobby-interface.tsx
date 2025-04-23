@@ -24,7 +24,7 @@ const LobbyInterface = () => {
     };
 
     return (
-        <div className="fixed inset-0 pointer-events-none select-none">
+        <div className="fixed inset-0 pointer-events-none select-none interface-2d">
             <style jsx global>{`
                 @media (max-aspect-ratio: 9/16) {
                     .tall-device-button {

@@ -1477,76 +1477,52 @@ export function Model(props) {
       />
       <group position={[-17.314, 82.831, 310.614]} rotation={[0, 1.379, Math.PI]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
       </group>
       <group position={[-10.803, 82.831, 312.008]} rotation={[0, 1.379, Math.PI]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_1.geometry}
           material={nodes.Cube473_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_2.geometry}
           material={nodes.Cube473_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_3.geometry}
           material={nodes.Cube473_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_4.geometry}
           material={nodes.Cube473_4.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_5.geometry}
           material={nodes.Cube473_5.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_6.geometry}
           material={nodes.Cube473_6.material}
         />
@@ -1583,32 +1559,22 @@ export function Model(props) {
       />
       <group position={[-78.783, 82.831, 249.543]} rotation={[0, 0.909, Math.PI]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
@@ -1633,32 +1599,22 @@ export function Model(props) {
       />
       <group position={[12.928, 82.831, 100.382]} rotation={[Math.PI, 1.101, 0]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
@@ -1689,32 +1645,22 @@ export function Model(props) {
       />
       <group position={[-83.11, 82.831, 119.137]} rotation={[0, 0.173, Math.PI]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
@@ -1733,32 +1679,22 @@ export function Model(props) {
       />
       <group position={[-128.999, 82.831, 138.773]} rotation={[0, 0.002, Math.PI]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
@@ -1771,152 +1707,104 @@ export function Model(props) {
       />
       <group position={[83.279, 82.831, 208.267]} rotation={[0, 1.379, Math.PI]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
       </group>
       <group position={[89.79, 82.831, 209.66]} rotation={[0, 1.379, Math.PI]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_1.geometry}
           material={nodes.Cube473_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_2.geometry}
           material={nodes.Cube473_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_3.geometry}
           material={nodes.Cube473_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_4.geometry}
           material={nodes.Cube473_4.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_5.geometry}
           material={nodes.Cube473_5.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_6.geometry}
           material={nodes.Cube473_6.material}
         />
       </group>
       <group position={[71.492, 82.831, 99.67]} rotation={[Math.PI, 1.518, 0]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
       </group>
       <group position={[56.648, 82.831, 116.186]} rotation={[0, -1.558, Math.PI]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_1.geometry}
           material={nodes.Cube473_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_2.geometry}
           material={nodes.Cube473_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_3.geometry}
           material={nodes.Cube473_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_4.geometry}
           material={nodes.Cube473_4.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_5.geometry}
           material={nodes.Cube473_5.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube473_6.geometry}
           material={nodes.Cube473_6.material}
         />
@@ -1935,32 +1823,22 @@ export function Model(props) {
       />
       <group position={[140.509, 82.831, 72.136]} rotation={[-Math.PI, -1.274, 0]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
@@ -1973,96 +1851,66 @@ export function Model(props) {
       />
       <group position={[216.538, 82.612, 127.661]} rotation={[Math.PI, 0.784, 0]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
       </group>
       <group position={[75.555, 82.831, 120.805]} rotation={[-Math.PI, -0.38, 0]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
       </group>
       <group position={[4.856, 82.831, 155.05]} rotation={[-Math.PI, -1.001, 0]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
@@ -2081,32 +1929,22 @@ export function Model(props) {
       />
       <group position={[43.836, 82.831, 37.723]} rotation={[0, 0.084, Math.PI]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
@@ -2125,32 +1963,22 @@ export function Model(props) {
       />
       <group position={[125.453, 82.831, 95.826]} rotation={[Math.PI, 1.413, 0]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
@@ -2163,32 +1991,22 @@ export function Model(props) {
       />
       <group position={[120.63, 82.831, 140.494]} rotation={[Math.PI, 0.505, 0]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
@@ -2201,32 +2019,22 @@ export function Model(props) {
       />
       <group position={[-67.362, 82.831, 175.69]} rotation={[0, 0.586, Math.PI]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
@@ -2245,32 +2053,22 @@ export function Model(props) {
       />
       <group position={[-119.452, 82.831, 210.18]} rotation={[0, 0.56, Math.PI]} scale={0.475}>
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468.geometry}
           material={materials.tokyo}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_1.geometry}
           material={nodes.Cube468_1.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_2.geometry}
           material={nodes.Cube468_2.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_3.geometry}
           material={nodes.Cube468_3.material}
         />
         <mesh
-          castShadow
-          receiveShadow
           geometry={nodes.Cube468_4.geometry}
           material={nodes.Cube468_4.material}
         />
@@ -2308,6 +2106,7 @@ export function Model(props) {
       <mesh
         geometry={nodes.Tokyo_Map.geometry}
         material={materials.tokyo}
+        receiveShadow
         position={[36.74, 82.611, 167.635]}
         rotation={[0, 0.215, -Math.PI]}
       />

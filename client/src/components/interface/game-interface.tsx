@@ -12,7 +12,7 @@ const GameInterface = () => {
 
 
     return (
-        <div className="fixed inset-0 pointer-events-none select-none">
+        <div className="fixed inset-0 pointer-events-none select-none interface-2d">
             <div className="absolute right-4 top-4">
                 <button
                     className="bg-carnage-blue-medium rounded-lg p-4 pointer-events-auto cursor-pointer"
