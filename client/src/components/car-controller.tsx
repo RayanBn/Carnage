@@ -17,6 +17,8 @@ import { PlayerCamera } from "./player-camera";
 import { PlayerNameTag } from "./player-nametag";
 import { Box, OrbitControls, TransformControls } from "@react-three/drei";
 import { DebugRay } from "./debug-ray";
+import { DebugArrow } from "./debug-arrow";
+import { RayData, SuspensionForceData } from "@/lib/data";
 
 export const CarController = ({
     id,
@@ -32,7 +34,8 @@ export const CarController = ({
     const rb = useRef<RapierRigidBody>(null);
     const targetRotation = useRef(new Quaternion());
     const targetPosition = useRef(new Vector3());
-    const [rays, setRays] = useState<{ origin: Vector3, end: Vector3, hit: boolean }[]>([]);
+    const [rays, setRays] = useState<RayData[]>([]);
+    const [suspensionForces, setSuspensionForces] = useState<SuspensionForceData[]>([]);
 
     useEffect(() => {
         if (!position) return;
@@ -60,7 +63,8 @@ export const CarController = ({
         targetPosition,
         targetRotation,
         emitPositionUpdate,
-        setRays
+        setRays,
+        setSuspensionForces
     );
 
     // usePlayerCamera(rb, isLocalPlayer);
@@ -69,6 +73,9 @@ export const CarController = ({
         <>
             {rays.map((ray, i) => (
                 <DebugRay key={i} start={ray.origin} end={ray.end} color={ray.hit ? "red" : "green"} />
+            ))}
+            {suspensionForces.map((force, i) => (
+                <DebugArrow key={i} origin={force.origin} direction={force.force} length={force.force.length() + 2} />
             ))}
             <RigidBody
                 ref={rb}

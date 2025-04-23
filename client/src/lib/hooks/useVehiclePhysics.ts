@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { vec3, quat } from "@react-three/rapier";
 import { Joystick } from "playroomkit";
 import * as THREE from "three"
+import { RayData, SuspensionForceData } from "../data";
 
 const PHYSICS = {
     EMIT_THROTTLE: 5,
@@ -20,55 +21,61 @@ const PHYSICS = {
     HALF_PI: Math.PI / 2,
 };
 
-type RayData = {
-    origin: THREE.Vector3,
-    end: THREE.Vector3,
-    hit: boolean
-};
+const suspensionLength = 1;
+const springStrength = 2; // spring strength
+const damping = 1;    // damping strength
+const suspensionPoints = [
+    new THREE.Vector3(-2, -0.55, -1), // front-left
+    new THREE.Vector3(2, -0.55, -1),  // front-right
+    new THREE.Vector3(-2, -0.55, 1),  // rear-left
+    new THREE.Vector3(2, -0.55, 1)   // rear-right
+];
 
-const computeSuspensionForce = (rb: RapierRigidBody, context: RapierContext) => {
-    const position = rb.translation();
-    const rotation = rb.rotation();
-    const carRot = new THREE.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
-    const carPos = new THREE.Vector3(position.x, position.y, position.z);
+const computeSuspensionForce = (linVel: number, toi: number) => {
+    const compression = suspensionLength - toi;
+    const force = (springStrength * compression) - (damping * linVel);
+    const suspensionForce = new THREE.Vector3(0, force, 0);
+
+    return suspensionForce;
+}
+
+const simulateSuspension = (rb: RapierRigidBody, context: RapierContext) => {
+    const carRot = quat(rb.rotation());
+    const carPos = vec3(rb.translation());
     const rays: RayData[] = [];
-    const suspensionPoints = [
-        new THREE.Vector3(-2, -0.6, -1), // front-left
-        new THREE.Vector3(2, -0.6, -1),  // front-right
-        new THREE.Vector3(-2, -0.6, 1),  // rear-left
-        new THREE.Vector3(2, -0.6, 1)   // rear-right
-    ];
-
-    const suspensionLength = 1;
-    const springStrength = 10; // spring strength
-    const damping = 2;    // damping strength
+    const suspensionForces: SuspensionForceData[] = [];
+    const localDown = new THREE.Vector3(0, -1, 0);
 
     suspensionPoints.forEach(point => {
         const worldStart = point.clone().applyQuaternion(carRot).add(carPos);
-        const downVector = new THREE.Vector3(0, -1, 0);
-        const ray = new context.rapier.Ray(worldStart, downVector);
+        const worldDown = localDown.clone().applyQuaternion(carRot).normalize();
+        const ray = new context.rapier.Ray(worldStart, worldDown);
         const hit = context.world.castRay(ray, suspensionLength, true);
 
-        var worldEnd = worldStart.clone().addScaledVector(downVector, suspensionLength);
+        var worldEnd = worldStart.clone().addScaledVector(worldDown, suspensionLength);
+        var suspensionForce = worldDown.clone().negate();
 
         if (hit) {
             worldEnd = vec3(ray.pointAt(hit.timeOfImpact));
-
-            const compression = suspensionLength - hit.timeOfImpact;
-            const linVel = rb.linvel();
-            const suspensionForce = (springStrength * compression) - (damping * linVel.y);
-
-            const force = new THREE.Vector3(0, suspensionForce, 0);
-            rb.applyImpulseAtPoint(force, worldStart, true);
+            suspensionForce = computeSuspensionForce(rb.linvel().y, hit.timeOfImpact);
+            suspensionForce.applyQuaternion(carRot);
+            rb.applyImpulseAtPoint(suspensionForce, worldStart, true);
         }
         rays.push({
             origin: worldStart,
             end: worldEnd,
+            direction: worldDown,
             hit: hit ? true : false
+        });
+
+        suspensionForces.push({
+            origin: worldStart,
+            force: suspensionForce,
         });
     });
     return {
-        rays: rays
+        rays: rays,
+        suspensionForces: suspensionForces
     }
 };
 
@@ -80,6 +87,7 @@ export function useVehiclePhysics(
     targetRotation: React.MutableRefObject<Quaternion>,
     emitPositionUpdate: (pos: Vector3, rot: Quaternion) => void,
     setRays: (rays: RayData[]) => void,
+    setSuspensionForces: (suspensionForces: SuspensionForceData[]) => void
 ) {
     const tempVector = useRef(new Vector3());
     const identityQuaternion = useRef(new Quaternion());
@@ -90,9 +98,10 @@ export function useVehiclePhysics(
         if (!rigidBody) return;
 
         if (isLocalPlayer) {
-            const { rays } = computeSuspensionForce(rigidBody, rapierContext);
+            const { rays, suspensionForces } = simulateSuspension(rigidBody, rapierContext);
 
             setRays(rays);
+            setSuspensionForces(suspensionForces);
 
             const currentPosition = vec3(rigidBody.translation());
             const currentRotation = quat(rigidBody.rotation());

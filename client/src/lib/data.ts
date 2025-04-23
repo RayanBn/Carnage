@@ -1,4 +1,6 @@
 
+import { Vector3 } from "three";
+
 export type Car = {
     id: number;
     name: string;
@@ -14,6 +16,19 @@ export type City = {
     id: number;
     name: string;
     image: string;
+}
+
+
+export type RayData = {
+    origin: Vector3,
+    end: Vector3,
+    direction: Vector3,
+    hit: boolean
+};
+
+export type SuspensionForceData = {
+    origin: Vector3,
+    force: Vector3,
 }
 
 export const cars: Car[] = [
