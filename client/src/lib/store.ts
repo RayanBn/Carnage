@@ -56,7 +56,7 @@ export const usePlayerStatesStore = create<PlayerStatesStore>((set, get) => ({
             id: id,
             state: playerState,
             controls: joystick,
-            position: new Vector3(0, 0, 0),
+            position: new Vector3(0, 5, 0),
             rotation: new Quaternion(0, 0, 0, 1)
         };
 

@@ -11,11 +11,10 @@ import { usePlayerCamera } from "@/lib/hooks/usePlayerCamera";
 import { CarControllerProps } from "@/lib/types";
 import { useNetworkSync } from "@/lib/hooks/useNetworkSync";
 import { useVehiclePhysics } from "@/lib/hooks/useVehiclePhysics";
-import { PHYSICS } from "@/lib/constants";
 import { VehicleModel } from "./vehicle-model";
 import { PlayerCamera } from "./player-camera";
 import { PlayerNameTag } from "./player-nametag";
-import { Box, OrbitControls, TransformControls } from "@react-three/drei";
+import { Box, OrbitControls, Point, TransformControls } from "@react-three/drei";
 import { DebugRay } from "./debug-ray";
 import { DebugArrow } from "./debug-arrow";
 import { RayData, SuspensionForceData } from "@/lib/data";
@@ -34,8 +33,6 @@ export const CarController = ({
     const rb = useRef<RapierRigidBody>(null);
     const targetRotation = useRef(new Quaternion());
     const targetPosition = useRef(new Vector3());
-    const [rays, setRays] = useState<RayData[]>([]);
-    const [suspensionForces, setSuspensionForces] = useState<SuspensionForceData[]>([]);
 
     useEffect(() => {
         if (!position) return;
@@ -56,37 +53,33 @@ export const CarController = ({
         targetRotation
     );
 
-    useVehiclePhysics(
+    const { suspensionData } = useVehiclePhysics(
         rb,
         isLocalPlayer,
         controls,
         targetPosition,
         targetRotation,
-        emitPositionUpdate,
-        setRays,
-        setSuspensionForces
+        emitPositionUpdate
     );
 
     // usePlayerCamera(rb, isLocalPlayer);
 
     return (
         <>
-            {rays.map((ray, i) => (
-                <DebugRay key={i} start={ray.origin} end={ray.end} color={ray.hit ? "red" : "green"} />
-            ))}
-            {suspensionForces.map((force, i) => (
-                <DebugArrow key={i} origin={force.origin} direction={force.force} length={force.force.length() + 2} />
+            {suspensionData.map((data, i) => (
+                <>
+                    <DebugArrow key={i} origin={data.suspensionPoint} direction={data.force} length={data.force.length()} />
+                    <DebugRay key={i + 1} start={data.suspensionPoint} end={data.wheelPoint} color={"green"} />
+                </>
             ))}
             <RigidBody
                 ref={rb}
-                // colliders={false}
-                angularDamping={15}
+                angularDamping={10}
+                mass={1000}
                 type="dynamic"
-                // mass={1000}
                 position={position || undefined}
                 quaternion={rotation || undefined}
             >
-                {/* <CuboidCollider args={[4, 1, 1.4]} /> */}
                 <Box
                     args={[4, 1, 2]}
                     material-color="grey"

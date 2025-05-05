@@ -31,6 +31,13 @@ export type SuspensionForceData = {
     force: Vector3,
 }
 
+export type SpringData = {
+    stiffness: number,
+    damping: number,
+    restLength: number,
+    maxTravel: number
+}
+
 export const cars: Car[] = [
     {
         id: 1,
