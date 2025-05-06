@@ -70,11 +70,11 @@ export const CarController = ({
     player
   );
 
-  // usePlayerCamera(rb, isLocalPlayer);
+  usePlayerCamera(rb, isLocalPlayer);
 
   return (
     <>
-      {suspensionData.map((data, i) => (
+      {/* {suspensionData.map((data, i) => (
         <>
           <DebugArrow
             key={i}
@@ -96,7 +96,7 @@ export const CarController = ({
           direction={slipVector}
           length={slipVector?.length() * 10}
         />
-      ) : null}
+      ) : null} */}
       <RigidBody
         ref={rb}
         angularDamping={10}
@@ -108,7 +108,7 @@ export const CarController = ({
       >
         <CuboidCollider args={[2, 0.6, 1]} />
         <VehicleModel player={player} />
-        {/* {isLocalPlayer && <PlayerCamera />} */}
+        {isLocalPlayer && <PlayerCamera />}
       </RigidBody>
     </>
   );

@@ -6,104 +6,106 @@ import { useAssets } from "../ui/assets-loader";
 import { usePlayerStatesStore } from "@/lib/store";
 import { useSocket } from "@/lib/hooks/useSocket";
 import { getRoomCode, useIsHost } from "playroomkit";
-import { GizmoHelper, GizmoViewport, OrbitControls } from "@react-three/drei";
+import {
+  Environment,
+  GizmoHelper,
+  GizmoViewport,
+  OrbitControls,
+  Sky,
+} from "@react-three/drei";
 import { CarController } from "../car-controller";
+import { Model as Map } from "../models/map";
+import { Model as GameMap } from "../models/gamemap";
 
 const GameScene = () => {
-    const { players } = usePlayerStatesStore();
-    const { registerAssetLoad } = useAssets();
-    const { socket } = useSocket();
-    const isHost = useIsHost();
-    const roomCode = getRoomCode();
+  const { players } = usePlayerStatesStore();
+  const { registerAssetLoad } = useAssets();
+  const { socket } = useSocket();
+  const isHost = useIsHost();
+  const roomCode = getRoomCode();
 
-    useEffect(() => {
-        registerAssetLoad();
-    }, [registerAssetLoad]);
+  useEffect(() => {
+    registerAssetLoad();
+  }, [registerAssetLoad]);
 
-    useEffect(() => {
-        if (!socket) return;
-        if (isHost) {
-            const payload = {
-                roomId: roomCode,
-            }
+  useEffect(() => {
+    if (!socket) return;
+    if (isHost) {
+      const payload = {
+        roomId: roomCode,
+      };
 
-            socket.emit("game-started", payload);
-        }
-    }, [socket, isHost, roomCode]);
+      socket.emit("game-started", payload);
+    }
+  }, [socket, isHost, roomCode]);
 
-    return (
-        <Canvas
-            shadows
-            camera={{
-                position: [20, -5, 5]
-            }}
-        >
-            <ambientLight/>
-            <color attach={"background"} args={["#AAAAAA"]}/>
-            <OrbitControls makeDefault/>
-            <GizmoHelper>
-                <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor="black" />
-            </GizmoHelper>
+  return (
+    <Canvas
+      shadows
+      camera={{
+        position: [5, -5, 5],
+      }}
+    >
+      <ambientLight />
+      <color attach={"background"} args={["#AAAAAA"]} />
+      <OrbitControls makeDefault />
+      <GizmoHelper>
+        <GizmoViewport
+          axisColors={["red", "green", "blue"]}
+          labelColor="black"
+        />
+      </GizmoHelper>
 
-            <Physics debug={true}>
-                {players.map((player, index) => {
-                    return (
-                        <CarController
-                            id={player.id}
-                            key={player.state?.id}
-                            state={player.state}
-                            controls={player.controls}
-                            idx={index}
-                            position={player.position}
-                            rotation={player.rotation}
-                            player={player}
-                        />
-                    );
-                })}
-                <RigidBody position={[3, 0, 1]}>
-                    <CuboidCollider
-                        args={[2, .3, 2]}
-                    />
-                </RigidBody>
-                <RigidBody
-                    position={[-10, 0, 1]}
-                    rotation={[0, Math.PI / 6, 0]}
-                >
-                    <CuboidCollider
-                        args={[2, .2, 20]}
-                    />
-                </RigidBody>
-                <RigidBody
-                    position={[-12, 0, 1]}
-                    rotation={[0, Math.PI / 6, 0]}
-                >
-                    <CuboidCollider
-                        args={[2, .1, 20]}
-                    />
-                </RigidBody>
-                <RigidBody position={[1, 0, 1]}>
-                    <CuboidCollider
-                        args={[2, .3, 2]}
-                    />
-                </RigidBody>
-                <RigidBody
-                    type="fixed"
-                    rotation={[-Math.PI / 2, 0, 0]}
-                    position={[0, 0, 0]}
-                >
-                    <mesh
-                        scale={[500, 500, 500]}
-                        receiveShadow
-                    >
-                        <meshPhongMaterial
-                            color="grey"
-                        />
-                        <planeGeometry/>
-                    </mesh>
-                </RigidBody>
-            </Physics>
-        </Canvas>
-    );
+      <Sky
+        distance={450000}
+        sunPosition={[0, 1, 0]}
+        inclination={0}
+        azimuth={0.25}
+      />
+      <pointLight
+        position={[-5, 30, 0]}
+        intensity={1000}
+        castShadow
+        shadow-radius={0.5}
+      />
+
+      <Physics debug={false}>
+        {players.map((player, index) => {
+          return (
+            <CarController
+              id={player.id}
+              key={player.state?.id}
+              state={player.state}
+              controls={player.controls}
+              idx={index}
+              position={player.position}
+              rotation={player.rotation}
+              player={player}
+            />
+          );
+        })}
+        {/* <RigidBody position={[3, 0, 1]}>
+          <CuboidCollider args={[2, 0.3, 2]} />
+        </RigidBody>
+        <RigidBody position={[-10, 0, 1]} rotation={[0, Math.PI / 6, 0]}>
+          <CuboidCollider args={[2, 0.2, 20]} />
+        </RigidBody>
+        <RigidBody position={[-12, 0, 1]} rotation={[0, Math.PI / 6, 0]}>
+          <CuboidCollider args={[2, 0.1, 20]} />
+        </RigidBody>
+        <RigidBody position={[1, 0, 1]}>
+          <CuboidCollider args={[2, 0.3, 2]} />
+        </RigidBody> */}
+        <RigidBody position={[0, 0, 0]} colliders="trimesh" type="fixed">
+          <GameMap
+            scale={0.04}
+            rotation={[-Math.PI / 2, 0, 0]}
+            position={[25, 5, 0]}
+          />
+        </RigidBody>
+      </Physics>
+    </Canvas>
+  );
 };
 
 export default GameScene;
