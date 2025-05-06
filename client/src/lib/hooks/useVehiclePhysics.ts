@@ -59,7 +59,7 @@ export function useVehiclePhysics(
     const localForwardVec = new THREE.Vector3(1, 0, 0);
     const localRightVec = new THREE.Vector3(0, 0, 1);
 
-    const [slipVector, setSlipVector] = useState<Vector3>();
+    const [slipVector, setSlipVector] = useState<Vector3>(new Vector3());
 
     useFrame((_, dt) => {
         const rigidBody = rigidBodyRef.current;
@@ -76,7 +76,8 @@ export function useVehiclePhysics(
 
             const worldRightVec = localRightVec.clone().applyQuaternion(rigidBody.rotation());
             const slipVel = vec3(rigidBody.linvel()).dot(worldRightVec);
-            rigidBody.applyImpulse(new Vector3(0, 0, -slipVel * 1).applyQuaternion(rigidBody.rotation()), true);
+            setSlipVector(worldRightVec.clone().multiplyScalar(-slipVel));
+            rigidBody.applyImpulse(slipVector, true);
 
             const currentPosition = vec3(rigidBody.translation());
             const currentRotation = quat(rigidBody.rotation());
@@ -117,5 +118,6 @@ export function useVehiclePhysics(
     });
     return ({
         suspensionData: suspensionData,
+        slipVector: slipVector
     });
 }

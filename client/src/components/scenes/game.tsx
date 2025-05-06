@@ -4,10 +4,10 @@ import { Canvas } from "@react-three/fiber";
 import { useEffect } from "react";
 import { useAssets } from "../ui/assets-loader";
 import { usePlayerStatesStore } from "@/lib/store";
-import { CarController } from "../car-controller";
 import { useSocket } from "@/lib/hooks/useSocket";
 import { getRoomCode, useIsHost } from "playroomkit";
-import { OrbitControls } from "@react-three/drei";
+import { GizmoHelper, GizmoViewport, OrbitControls } from "@react-three/drei";
+import { CarController } from "../car-controller";
 
 const GameScene = () => {
     const { players } = usePlayerStatesStore();
@@ -39,13 +39,12 @@ const GameScene = () => {
             }}
         >
             <ambientLight/>
-            <directionalLight
-                castShadow
-                intensity={10}
-                rotation={[20, 0, 20]}
-            />
-            <color attach={"background"} args={["#FF5500"]}/>
+            <color attach={"background"} args={["#AAAAAA"]}/>
             <OrbitControls makeDefault/>
+            <GizmoHelper>
+                <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor="black" />
+            </GizmoHelper>
+
             <Physics debug={true}>
                 {players.map((player, index) => {
                     return (
@@ -60,16 +59,39 @@ const GameScene = () => {
                         />
                     );
                 })}
-                <RigidBody position={[1, -1, .9]}>
+                <RigidBody position={[3, 0, 1]}>
                     <CuboidCollider
-                        args={[2, .1, 2]}
+                        args={[2, .3, 2]}
                     />
                 </RigidBody>
-                <RigidBody type="fixed" position={[0, 0, 0]}>
+                <RigidBody
+                    position={[-10, 0, 1]}
+                    rotation={[0, Math.PI / 6, 0]}
+                >
+                    <CuboidCollider
+                        args={[2, .2, 20]}
+                    />
+                </RigidBody>
+                <RigidBody
+                    position={[-12, 0, 1]}
+                    rotation={[0, Math.PI / 6, 0]}
+                >
+                    <CuboidCollider
+                        args={[2, .1, 20]}
+                    />
+                </RigidBody>
+                <RigidBody position={[1, 0, 1]}>
+                    <CuboidCollider
+                        args={[2, .3, 2]}
+                    />
+                </RigidBody>
+                <RigidBody
+                    type="fixed"
+                    rotation={[-Math.PI / 2, 0, 0]}
+                    position={[0, 0, 0]}
+                >
                     <mesh
                         scale={[500, 500, 500]}
-                        rotation={[-Math.PI / 2, 0, 0]}
-                        position={[0, -10, 0]}
                         receiveShadow
                     >
                         <meshPhongMaterial

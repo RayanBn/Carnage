@@ -3,6 +3,7 @@ import {
     Physics,
     RapierRigidBody,
     RigidBody,
+    vec3,
 } from "@react-three/rapier";
 import { myPlayer } from "playroomkit";
 import { useEffect, useRef, useState } from "react";
@@ -53,7 +54,7 @@ export const CarController = ({
         targetRotation
     );
 
-    const { suspensionData } = useVehiclePhysics(
+    const { suspensionData, slipVector } = useVehiclePhysics(
         rb,
         isLocalPlayer,
         controls,
@@ -72,6 +73,9 @@ export const CarController = ({
                     <DebugRay key={i + 1} start={data.suspensionPoint} end={data.wheelPoint} color={"green"} />
                 </>
             ))}
+            {
+                rb.current ? <DebugArrow origin={vec3(rb.current.translation())} direction={slipVector} length={slipVector?.length() * 10}/> : null
+            }
             <RigidBody
                 ref={rb}
                 angularDamping={10}
