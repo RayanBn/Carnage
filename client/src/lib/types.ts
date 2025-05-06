@@ -1,3 +1,4 @@
+import { GroupProps } from "@react-three/fiber";
 import { Joystick, PlayerState } from "playroomkit";
 import { Quaternion, Vector3 } from "three";
 
@@ -8,6 +9,7 @@ export interface CarControllerProps {
     idx: number;
     position: Vector3 | null;
     rotation: Quaternion | null;
+    player: any;
 }
 
 export interface NetworkPosition {
@@ -20,4 +22,9 @@ export interface NetworkPosition {
         w: number;
     };
     username: string;
+}
+
+export interface CarModelProps {
+  playerId: string;
+  props?: GroupProps;
 }
