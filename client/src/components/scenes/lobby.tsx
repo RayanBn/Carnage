@@ -51,7 +51,7 @@ const LobbyScene = () => {
             shadows
             camera={{
                 position: [-30, 5, 10],
-                fov: 45,
+                fov: 80,
                 near: 0.1,
                 far: 100000,
             }}

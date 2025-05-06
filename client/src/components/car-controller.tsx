@@ -1,19 +1,24 @@
 import {
     CuboidCollider,
+    Physics,
     RapierRigidBody,
     RigidBody,
+    vec3,
 } from "@react-three/rapier";
 import { myPlayer } from "playroomkit";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Quaternion, Vector3 } from "three";
 import { usePlayerCamera } from "@/lib/hooks/usePlayerCamera";
 import { CarControllerProps } from "@/lib/types";
 import { useNetworkSync } from "@/lib/hooks/useNetworkSync";
 import { useVehiclePhysics } from "@/lib/hooks/useVehiclePhysics";
-import { PHYSICS } from "@/lib/constants";
 import { VehicleModel } from "./vehicle-model";
 import { PlayerCamera } from "./player-camera";
 import { PlayerNameTag } from "./player-nametag";
+import { Box, OrbitControls, Point, TransformControls } from "@react-three/drei";
+import { DebugRay } from "./debug-ray";
+import { DebugArrow } from "./debug-arrow";
+import { RayData, SuspensionForceData } from "@/lib/data";
 
 export const CarController = ({
     id,
@@ -49,7 +54,7 @@ export const CarController = ({
         targetRotation
     );
 
-    useVehiclePhysics(
+    const { suspensionData, slipVector } = useVehiclePhysics(
         rb,
         isLocalPlayer,
         controls,
@@ -58,23 +63,36 @@ export const CarController = ({
         emitPositionUpdate
     );
 
-    usePlayerCamera(rb, isLocalPlayer);
+    // usePlayerCamera(rb, isLocalPlayer);
 
     return (
-        <group position={[0, 0, idx]} rotation={[0, -PHYSICS.HALF_PI, 0]}>
+        <>
+            {suspensionData.map((data, i) => (
+                <>
+                    <DebugArrow key={i} origin={data.suspensionPoint} direction={data.force} length={data.force.length()} />
+                    <DebugRay key={i + 1} start={data.suspensionPoint} end={data.wheelPoint} color={"green"} />
+                </>
+            ))}
+            {
+                rb.current ? <DebugArrow origin={vec3(rb.current.translation())} direction={slipVector} length={slipVector?.length() * 10}/> : null
+            }
             <RigidBody
                 ref={rb}
-                colliders={false}
-                type="dynamic"
+                angularDamping={10}
                 mass={1000}
+                type="dynamic"
                 position={position || undefined}
                 quaternion={rotation || undefined}
             >
-                <CuboidCollider args={[4, 1, 1.4]} />
-                <VehicleModel />
-                {isLocalPlayer && <PlayerCamera />}
-                <PlayerNameTag state={state} />
+                <Box
+                    args={[4, 1, 2]}
+                    material-color="grey"
+                    castShadow
+                />
+                {/* <VehicleModel /> */}
+                {/* {isLocalPlayer && <PlayerCamera />} */}
+                {/* <PlayerNameTag state={state} /> */}
             </RigidBody>
-        </group>
+        </>
     );
 };

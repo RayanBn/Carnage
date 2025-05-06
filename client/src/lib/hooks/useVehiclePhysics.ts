@@ -1,9 +1,12 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Vector3, Quaternion } from "three";
-import { RapierRigidBody } from "@react-three/rapier";
+import { RapierContext, RapierRigidBody, useRapier } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
-import { vec3, quat, euler } from "@react-three/rapier";
+import { vec3, quat } from "@react-three/rapier";
 import { Joystick } from "playroomkit";
+import * as THREE from "three"
+import { RayData, SpringData, SuspensionForceData } from "../data";
+import { useSuspension } from "./useSuspension";
 
 const PHYSICS = {
     EMIT_THROTTLE: 5,
@@ -19,6 +22,27 @@ const PHYSICS = {
     HALF_PI: Math.PI / 2,
 };
 
+const suspensionPoints = [
+    new THREE.Vector3(-2, -0.3, -1), // front-left
+    new THREE.Vector3(2, -0.3, -1),  // front-right
+    new THREE.Vector3(-2, -0.3, 1),  // rear-left
+    new THREE.Vector3(2, -0.3, 1)   // rear-right
+];
+
+const springData: SpringData = {
+    restLength: 1.5,
+    stiffness: 2,
+    damping: 20,
+    maxTravel: 1
+};
+
+function radToXY(rad: number) {
+    return {
+        y: Math.cos(rad),
+        x: Math.sin(rad)
+    };
+}
+
 export function useVehiclePhysics(
     rigidBodyRef: React.RefObject<RapierRigidBody>,
     isLocalPlayer: boolean,
@@ -30,48 +54,30 @@ export function useVehiclePhysics(
     const tempVector = useRef(new Vector3());
     const identityQuaternion = useRef(new Quaternion());
 
+    const suspensionData = useSuspension({ wheelPositions: suspensionPoints, rb: rigidBodyRef, spring: springData });
+
+    const localForwardVec = new THREE.Vector3(1, 0, 0);
+    const localRightVec = new THREE.Vector3(0, 0, 1);
+
+    const [slipVector, setSlipVector] = useState<Vector3>(new Vector3());
+
     useFrame((_, dt) => {
         const rigidBody = rigidBodyRef.current;
         if (!rigidBody) return;
 
         if (isLocalPlayer) {
+
+
             if (controls?.isJoystickPressed()) {
-                const angle = controls.angle();
-                const velocity = vec3(rigidBody.linvel());
-                const speed = velocity.length();
-
-                const MIN_ROT = 0.2;
-                const MAX_ROT = 4.0;
-                const MAX_SPEED = 100;
-
-                const rotationFactor = Math.min(
-                    MIN_ROT + (speed / MAX_SPEED) * (MAX_ROT - MIN_ROT),
-                    MAX_ROT
-                );
-
-                const rotVel = vec3(rigidBody.angvel());
-
-                if (speed > 0.1) {
-                    rotVel.y = -Math.sin(angle) * rotationFactor;
-                    rigidBody.setAngvel(rotVel, true);
-                }
-                const dir = angle > PHYSICS.HALF_PI ? 1 : -1;
-
-                if (Math.abs(Math.cos(angle)) > 0.5) {
-                    const impulse = vec3({
-                        x: PHYSICS.IMPULSE_MULTIPLIER * dt * -dir,
-                        y: 0,
-                        z: 0,
-                    });
-
-                    const eulerRot = euler().setFromQuaternion(
-                        quat(rigidBody.rotation())
-                    );
-
-                    impulse.applyEuler(eulerRot);
-                    rigidBody.applyImpulse(impulse, true);
-                }
+                const {x, y} = radToXY(controls.angle());
+                rigidBody.applyImpulseAtPoint(new THREE.Vector3(y, 0, 0).applyQuaternion(rigidBody.rotation()), vec3(rigidBody.translation()).add(new Vector3(0, -1, 0)), true);
+                rigidBody.applyTorqueImpulse(new THREE.Vector3(0, -x * 4, 0), true);
             }
+
+            const worldRightVec = localRightVec.clone().applyQuaternion(rigidBody.rotation());
+            const slipVel = vec3(rigidBody.linvel()).dot(worldRightVec);
+            setSlipVector(worldRightVec.clone().multiplyScalar(-slipVel));
+            rigidBody.applyImpulse(slipVector, true);
 
             const currentPosition = vec3(rigidBody.translation());
             const currentRotation = quat(rigidBody.rotation());
@@ -109,5 +115,9 @@ export function useVehiclePhysics(
                 rigidBody.applyTorqueImpulse(tempVector.current, true);
             }
         }
+    });
+    return ({
+        suspensionData: suspensionData,
+        slipVector: slipVector
     });
 }
