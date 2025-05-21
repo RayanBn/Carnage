@@ -6,97 +6,124 @@ import { myPlayer } from "playroomkit";
 import { PHYSICS } from "../constants";
 
 export function useNetworkSync(
-    id: string,
-    isLocalPlayer: boolean,
-    targetPosition: React.MutableRefObject<Vector3>,
-    targetRotation: React.MutableRefObject<Quaternion>
+  id: string,
+  isLocalPlayer: boolean,
+  targetPosition: React.MutableRefObject<Vector3>,
+  targetRotation: React.MutableRefObject<Quaternion>
 ) {
-    const { socket } = useSocket();
-    const me = myPlayer();
-    const { updatePlayerPosition } = usePlayerStatesStore();
+  const { socket } = useSocket();
+  const me = myPlayer();
+  const { updatePlayerPosition } = usePlayerStatesStore();
 
-    const prevTranslation = useRef<Vector3>(new Vector3(0, 0, 0));
-    const prevRotation = useRef<Quaternion>(new Quaternion());
-    const lastEmitTime = useRef<number>(0);
-    const tempVector = useRef(new Vector3());
+  const prevTranslation = useRef<Vector3>(new Vector3(0, 0, 0));
+  const prevRotation = useRef<Quaternion>(new Quaternion());
+  const lastEmitTime = useRef<number>(0);
+  const tempVector = useRef(new Vector3());
 
-    useEffect(() => {
-        if (!socket) return;
+  useEffect(() => {
+    if (!socket) return;
 
-        const myId = me?.id;
+    const myId = me?.id;
 
-        const handleMove = (data: any) => {
-            if (data.id === myId) return;
+    socket.on("respawn", (data: any) => {
+      if (data.id === myId) return;
 
-            tempVector.current.set(
-                data.position[0],
-                data.position[1],
-                data.position[2]
-            );
+      tempVector.current.set(
+        data.position[0],
+        data.position[1],
+        data.position[2]
+      );
 
-            const newRotation = new Quaternion(
-                data.rotation.x,
-                data.rotation.y,
-                data.rotation.z,
-                data.rotation.w
-            );
+      const newRotation = new Quaternion(
+        data.rotation.x,
+        data.rotation.y,
+        data.rotation.z,
+        data.rotation.w
+      );
 
-            targetPosition.current.copy(tempVector.current);
-            targetRotation.current.copy(newRotation);
-            updatePlayerPosition(
-                data.id,
-                tempVector.current.clone(),
-                newRotation
-            );
-        };
+      targetPosition.current.copy(tempVector.current);
+      targetRotation.current.copy(newRotation);
+      updatePlayerPosition(data.id, tempVector.current.clone(), newRotation);
+    });
 
-        socket.on("move", handleMove);
+    const handleMove = (data: any) => {
+      if (data.id === myId) return;
 
-        return () => {
-            socket.off("move", handleMove);
-        };
-    }, [socket, updatePlayerPosition, me?.id, targetPosition, targetRotation]);
+      tempVector.current.set(
+        data.position[0],
+        data.position[1],
+        data.position[2]
+      );
 
-    const emitPositionUpdate = useCallback(
-        (currentPosition: Vector3, currentRotation: Quaternion) => {
-            const now = performance.now();
-            if (now - lastEmitTime.current < PHYSICS.EMIT_THROTTLE) return;
+      const newRotation = new Quaternion(
+        data.rotation.x,
+        data.rotation.y,
+        data.rotation.z,
+        data.rotation.w
+      );
 
-            if (!socket) return;
+      targetPosition.current.copy(tempVector.current);
+      targetRotation.current.copy(newRotation);
+      updatePlayerPosition(data.id, tempVector.current.clone(), newRotation);
+    };
 
-            const positionChanged =
-                currentPosition.distanceTo(prevTranslation.current) >
-                PHYSICS.POSITION_THRESHOLD;
-            const rotationChanged =
-                Math.abs(currentRotation.angleTo(prevRotation.current)) >
-                PHYSICS.ROTATION_THRESHOLD;
+    socket.on("move", handleMove);
 
-            if (!(positionChanged || rotationChanged)) return;
+    return () => {
+      socket.off("move", handleMove);
+    };
+  }, [socket, updatePlayerPosition, me?.id, targetPosition, targetRotation]);
 
-            const playerName = me?.getProfile().name || "Unknown";
+  const emitPositionUpdate = useCallback(
+    (currentPosition: Vector3, currentRotation: Quaternion) => {
+      const now = performance.now();
+      if (now - lastEmitTime.current < PHYSICS.EMIT_THROTTLE) return;
 
-            socket.emit("move", {
-                id,
-                position: [
-                    currentPosition.x,
-                    currentPosition.y,
-                    currentPosition.z,
-                ],
-                rotation: {
-                    x: currentRotation.x,
-                    y: currentRotation.y,
-                    z: currentRotation.z,
-                    w: currentRotation.w,
-                },
-                username: playerName,
-            });
+      if (!socket) return;
 
-            prevTranslation.current.copy(currentPosition);
-            prevRotation.current.copy(currentRotation);
-            lastEmitTime.current = now;
+      const positionChanged =
+        currentPosition.distanceTo(prevTranslation.current) >
+        PHYSICS.POSITION_THRESHOLD;
+      const rotationChanged =
+        Math.abs(currentRotation.angleTo(prevRotation.current)) >
+        PHYSICS.ROTATION_THRESHOLD;
+
+      if (!(positionChanged || rotationChanged)) return;
+
+      const playerName = me?.getProfile().name || "Unknown";
+
+      if (currentPosition.y < 10) {
+        socket.emit("respawn", {
+          id,
+          position: [currentPosition.x, currentPosition.y, currentPosition.z],
+          rotation: {
+            x: currentRotation.x,
+            y: currentRotation.y,
+            z: currentRotation.z,
+            w: currentRotation.w,
+          },
+          username: playerName,
+        });
+      }
+
+      socket.emit("move", {
+        id,
+        position: [currentPosition.x, currentPosition.y, currentPosition.z],
+        rotation: {
+          x: currentRotation.x,
+          y: currentRotation.y,
+          z: currentRotation.z,
+          w: currentRotation.w,
         },
-        [socket, id, me]
-    );
+        username: playerName,
+      });
 
-    return { emitPositionUpdate };
+      prevTranslation.current.copy(currentPosition);
+      prevRotation.current.copy(currentRotation);
+      lastEmitTime.current = now;
+    },
+    [socket, id, me]
+  );
+
+  return { emitPositionUpdate };
 }

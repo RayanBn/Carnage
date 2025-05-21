@@ -103,6 +103,23 @@ const GameScene = () => {
             position={[25, 5, 0]}
           />
         </RigidBody>
+
+        {/* <RigidBody
+          position={[0, -10, 0]}
+          type="fixed"
+          onCollisionEnter={(e) => {
+            console.log("Collision detected", e);
+          }}
+        >
+          <mesh rotation={[-Math.PI / 2, 0, 0]}>
+            <planeGeometry args={[1000, 1000]} />
+            <meshStandardMaterial
+              color="green"
+              opacity={0.1}
+              transparent={true}
+            />
+          </mesh>
+        </RigidBody> */}
       </Physics>
     </Canvas>
   );

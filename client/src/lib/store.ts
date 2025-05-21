@@ -28,7 +28,12 @@ export type Player = {
 export type PlayerStatesStore = {
   players: Player[];
   tempPlayers: Player[];
-  addPlayer: (playerState: PlayerState, isMobile: boolean, id: string) => void;
+  addPlayer: (
+    playerState: PlayerState,
+    isMobile: boolean,
+    id: string,
+    position: Vector3
+  ) => void;
   updatePlayerPosition: (
     id: string,
     position: Vector3,
@@ -53,7 +58,12 @@ export const usePlayerStateStore = create<PlayerStateStore>((set) => ({
 export const usePlayerStatesStore = create<PlayerStatesStore>((set, get) => ({
   players: [],
   tempPlayers: [],
-  addPlayer: (playerState: PlayerState, isMobile: boolean, id: string) => {
+  addPlayer: (
+    playerState: PlayerState,
+    isMobile: boolean,
+    id: string,
+    position: Vector3
+  ) => {
     const joystick = new Joystick(playerState, {
       type: "angular",
       keyboard: !isMobile,
@@ -63,7 +73,7 @@ export const usePlayerStatesStore = create<PlayerStatesStore>((set, get) => ({
       id: id,
       state: playerState,
       controls: joystick,
-      position: new Vector3(0, 5, 0),
+      position: position,
       rotation: new Quaternion(0, 0, 0, 1),
     };
 

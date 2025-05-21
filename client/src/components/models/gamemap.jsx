@@ -16,7 +16,7 @@ export function Model(props) {
   return (
     <group {...props} dispose={null}>
       <group rotation={[Math.PI / 2, 0, 0]} userData={{ name: "RootNode" }}>
-        <group
+        {/* <group
           position={[-369.069, -90.704, -920.159]}
           userData={{ name: "Cars" }}
         >
@@ -230,7 +230,7 @@ export function Model(props) {
             scale={1.5}
             userData={{ name: "CAR_03_3_World ap_0" }}
           />
-        </group>
+        </group> */}
         <group
           position={[-858.07, -53.779, 24.514]}
           rotation={[0, Math.PI / 2, 0]}
