@@ -8,7 +8,7 @@ import {
 } from "../types/socket.types";
 
 const moveRateLimiter = new Limiter({
-  tokensPerInterval: 300,
+  tokensPerInterval: 3000,
   interval: "second",
 });
 

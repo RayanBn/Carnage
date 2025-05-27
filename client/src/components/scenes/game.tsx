@@ -1,4 +1,4 @@
-import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import { RigidBody } from "@react-three/rapier";
 import { Physics } from "@react-three/rapier";
 import { Canvas } from "@react-three/fiber";
 import { useEffect } from "react";
@@ -7,14 +7,12 @@ import { usePlayerStatesStore } from "@/lib/store";
 import { useSocket } from "@/lib/hooks/useSocket";
 import { getRoomCode, useIsHost } from "playroomkit";
 import {
-  Environment,
   GizmoHelper,
   GizmoViewport,
   OrbitControls,
   Sky,
 } from "@react-three/drei";
 import { CarController } from "../car-controller";
-import { Model as Map } from "../models/map";
 import { Model as GameMap } from "../models/gamemap";
 
 const GameScene = () => {
@@ -49,12 +47,12 @@ const GameScene = () => {
       <ambientLight />
       <color attach={"background"} args={["#AAAAAA"]} />
       <OrbitControls makeDefault />
-      <GizmoHelper>
+      {/* <GizmoHelper>
         <GizmoViewport
           axisColors={["red", "green", "blue"]}
           labelColor="black"
         />
-      </GizmoHelper>
+      </GizmoHelper> */}
 
       <Sky
         distance={450000}
@@ -84,18 +82,6 @@ const GameScene = () => {
             />
           );
         })}
-        {/* <RigidBody position={[3, 0, 1]}>
-          <CuboidCollider args={[2, 0.3, 2]} />
-        </RigidBody>
-        <RigidBody position={[-10, 0, 1]} rotation={[0, Math.PI / 6, 0]}>
-          <CuboidCollider args={[2, 0.2, 20]} />
-        </RigidBody>
-        <RigidBody position={[-12, 0, 1]} rotation={[0, Math.PI / 6, 0]}>
-          <CuboidCollider args={[2, 0.1, 20]} />
-        </RigidBody>
-        <RigidBody position={[1, 0, 1]}>
-          <CuboidCollider args={[2, 0.3, 2]} />
-        </RigidBody> */}
         <RigidBody position={[0, 0, 0]} colliders="trimesh" type="fixed">
           <GameMap
             scale={0.04}
@@ -103,23 +89,6 @@ const GameScene = () => {
             position={[25, 5, 0]}
           />
         </RigidBody>
-
-        {/* <RigidBody
-          position={[0, -10, 0]}
-          type="fixed"
-          onCollisionEnter={(e) => {
-            console.log("Collision detected", e);
-          }}
-        >
-          <mesh rotation={[-Math.PI / 2, 0, 0]}>
-            <planeGeometry args={[1000, 1000]} />
-            <meshStandardMaterial
-              color="green"
-              opacity={0.1}
-              transparent={true}
-            />
-          </mesh>
-        </RigidBody> */}
       </Physics>
     </Canvas>
   );
