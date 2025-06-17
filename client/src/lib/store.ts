@@ -66,6 +66,9 @@ export const usePlayerStatesStore = create<PlayerStatesStore>((set, get) => ({
   ) => {
     const joystick = new Joystick(playerState, {
       type: "angular",
+      buttons: [
+        {id: "drift", label: "Drift"}
+      ],
       keyboard: !isMobile,
     });
 

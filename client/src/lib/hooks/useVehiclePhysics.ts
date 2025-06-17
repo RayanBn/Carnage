@@ -7,6 +7,7 @@ import { Joystick } from "playroomkit";
 import * as THREE from "three";
 import { RayData, SpringData, SuspensionForceData } from "../data";
 import { useSuspension } from "./useSuspension";
+import { useKeyboardControls } from "@react-three/drei";
 
 const PHYSICS = {
   EMIT_THROTTLE: 5,
@@ -23,10 +24,10 @@ const PHYSICS = {
 };
 
 const suspensionPoints = [
-  new THREE.Vector3(-2, -0.3, -1), // front-left
-  new THREE.Vector3(2, -0.3, -1), // front-right
-  new THREE.Vector3(-2, -0.3, 1), // rear-left
-  new THREE.Vector3(2, -0.3, 1), // rear-right
+  new THREE.Vector3(-1.9, -0.3, -1), // front-left
+  new THREE.Vector3(1.9, -0.3, -1), // front-right
+  new THREE.Vector3(-1.9, -0.3, 1), // rear-left
+  new THREE.Vector3(1.9, -0.3, 1), // rear-right
 ];
 
 const springData: SpringData = {
@@ -61,6 +62,8 @@ export function useVehiclePhysics(
     rb: rigidBodyRef,
     spring: springData,
   });
+  const [_, get] = useKeyboardControls();
+
 
   useEffect(() => {
     if (!player) return;
@@ -87,7 +90,7 @@ export function useVehiclePhysics(
       if (controls?.isJoystickPressed()) {
         const { x, y } = radToXY(controls.angle());
         rigidBody.applyImpulseAtPoint(
-          new THREE.Vector3(y, 0, 0).applyQuaternion(rigidBody.rotation()),
+          new THREE.Vector3(y * 2, 0, 0).applyQuaternion(rigidBody.rotation()),
           vec3(rigidBody.translation()).add(new Vector3(0, -1, 0)),
           true
         );
@@ -135,7 +138,13 @@ export function useVehiclePhysics(
       const worldRightVec = localRightVec
         .clone()
         .applyQuaternion(rigidBody.rotation());
-      const slipVel = vec3(rigidBody.linvel()).dot(worldRightVec);
+
+      var gripFactor = 1.0;
+
+      if (get()["drift"] || controls?.isPressed("drift")) {
+        gripFactor = 0.3;
+      }
+      const slipVel = vec3(rigidBody.linvel()).dot(worldRightVec) * gripFactor;
       setSlipVector(worldRightVec.clone().multiplyScalar(-slipVel));
       rigidBody.applyImpulse(slipVector, true);
 
